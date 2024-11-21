@@ -18,7 +18,7 @@ class rand_test extends uvm_test;
         super.run_phase(phase);
         phase.raise_objection(this);
 
-        rs = reset_seq::type_id::create("rs");
+        rs = sync_reset_seq::type_id::create("rs");
 
         rs.start(env.agnt.seqr);
 
