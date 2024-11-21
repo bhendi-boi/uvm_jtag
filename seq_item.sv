@@ -27,11 +27,11 @@ class transaction extends uvm_sequence_item;
 
     function void do_print(uvm_printer printer);
         super.do_print(printer);
-        printer.print_field_int("TMS",tms_pad_i, 1,UVM_HEX)
-        printer.print_field_int("TRST",trst_pad_i, 1,UVM_HEX)
-        printer.print_field_int("TDI",tdi_pad_i, 1,UVM_HEX)
-        printer.print_field_int("TDO",tdo_pad_o, 1,UVM_HEX)
-        printer.print_field_int("TDO_EN",tdo_padoe_o, 1,UVM_HEX)
+        printer.print_field_int("TMS", tms_pad_i, 1, UVM_HEX);
+        printer.print_field_int("TRST", trst_pad_i, 1, UVM_HEX);
+        printer.print_field_int("TDI", tdi_pad_i, 1, UVM_HEX);
+        printer.print_field_int("TDO", tdo_pad_o, 1, UVM_HEX);
+        printer.print_field_int("TDO_EN", tdo_padoe_o, 1, UVM_HEX);
     endfunction
 
 endclass
