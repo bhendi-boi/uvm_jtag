@@ -8,7 +8,6 @@ class scoreboard extends uvm_scoreboard;
 
     function new(string name = "scoreboard", uvm_component parent);
         super.new(name, parent);
-        `uvm_info("Scoreboard", "Constructor Scoreboard", UVM_MEDIUM)
     endfunction
 
     function void build_phase(uvm_phase phase);
