@@ -21,7 +21,7 @@ module top ();
         forever #10 tck_pad_i = ~tck_pad_i;
     end
 
-    jtag_intf intf (.tck_pad_i(tck_pad_i));
+    jtag_if intf (.tck_pad_i(tck_pad_i));
 
     tap_top dut (
         .tms_pad_i  (intf.tms_pad_i),

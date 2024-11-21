@@ -1,4 +1,4 @@
-interface jtag_intf (
+interface jtag_if (
     input logic tck_pad_i
 );
 
