@@ -19,7 +19,7 @@ class monitor extends uvm_monitor;
 
     task run_phase(uvm_phase phase);
         tr = transaction::type_id::create("tr");
-        @(posedge vif.clk);
+        @(posedge vif.tck_pad_i);
         // the above line ensures monitor and driver are in sync
         forever begin
             capture(tr);
