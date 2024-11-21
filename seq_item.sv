@@ -25,6 +25,10 @@ class transaction extends uvm_sequence_item;
 
     logic tdo_o;
 
+    function new(string name = "transaction");
+        super.new(name);
+    endfunction
+
     function void do_print(uvm_printer printer);
         super.do_print(printer);
         printer.print_field_int("TMS", tms_pad_i, 1, UVM_HEX);
