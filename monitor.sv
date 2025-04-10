@@ -24,13 +24,19 @@ class monitor extends uvm_monitor;
         forever begin
             capture(tr);
             `uvm_info("Monitor", "Sampled a transaction", UVM_NONE)
-            tr.print();
+            `uvm_info("Monitor", tr.convert2string(), UVM_NONE)
             monitor_port.write(tr);
         end
     endtask
 
     task capture(transaction tr);
-        //    TODO: Add capture code
+        @(posedge vif.tck_pad_i);
+        tr.tms_pad_i = vif.tms_pad_i;
+        tr.trst_pad_i = vif.trst_pad_i;
+        tr.tdi_pad_i = vif.tdi_pad_i;
+        tr.tdo_o = vif.tdo_o;
+        tr.tdo_pad_o = vif.tdo_pad_o;
+        tr.tdo_padoe_o = vif.tdo_padoe_o;
     endtask
 
 endclass
