@@ -38,7 +38,7 @@ class transaction extends uvm_sequence_item;
     //     printer.print_field_int("TDO_EN", tdo_padoe_o, 1, UVM_HEX);
     // endfunction
 
-    function convert2string();
+    function string convert2string();
         string msg = $sformatf("TMS: %d, TRST: %d", tms_pad_i, trst_pad_i);
 
         msg = {msg, $sformatf("TDI: %d", tdi_pad_i)};
