@@ -1,7 +1,9 @@
 class async_reset_seq extends uvm_sequence;
     `uvm_object_utils(async_reset_seq)
 
-    transaction tr;
+    rand transaction tr;
+
+    constraint reset {tr.trst_pad_i == 1;}
 
     function new(string name = "async_reset_seq");
         super.new(name);
@@ -9,7 +11,10 @@ class async_reset_seq extends uvm_sequence;
 
     task body();
         tr = transaction::type_id::create("tr");
-        `uvm_do_with(tr, {trst_pad_i == 1;});
+        start_item(tr);
+        if (!tr.randomize())
+            `uvm_fatal("Async Reset Sequence", "Randomisation failed")
+        finish_item(tr);
     endtask
 
 endclass
@@ -17,7 +22,9 @@ endclass
 class sync_reset_seq extends uvm_sequence;
     `uvm_object_utils(sync_reset_seq)
 
-    transaction tr;
+    rand transaction tr;
+
+    constraint tdi_is_1 {tr.tdi_pad_i == 1;}
 
     function new(string name = "sync_reset_seq");
         super.new(name);
@@ -25,8 +32,12 @@ class sync_reset_seq extends uvm_sequence;
 
     task body();
         tr = transaction::type_id::create("tr");
-        repeat (5) begin
-            `uvm_do_with(tr, {tms_pad_i == 1;});
+
+        repeat (5) begin  // 5 consequtive TDI = 1 resets JTAG
+            start_item(tr);
+            if (!tr.randomize())
+                `uvm_fatal("Async Reset Sequence", "Randomisation failed")
+            finish_item(tr);
         end
     endtask
 
