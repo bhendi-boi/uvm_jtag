@@ -23,13 +23,16 @@ class driver extends uvm_driver #(transaction);
             seq_item_port.get_next_item(tr);
             drive(tr);
             `uvm_info("Driver", "Drove a transaction", UVM_NONE)
-            tr.print();
+            `uvm_info("Driver", tr.convert2string(), UVM_NONE)
             seq_item_port.item_done();
         end
     endtask
 
     task drive(transaction tr);
-        // ! TODO
+        @(posedge vif.tck_pad_i);
+        vif.tms_pad_i  <= tr.tms_pad_i;
+        vif.trst_pad_i <= tr.trst_pad_i;
+        vif.tdi_pad_i  <= tr.tdi_pad_i;
     endtask
 
 endclass
