@@ -23,7 +23,7 @@ class scoreboard extends uvm_scoreboard;
     endfunction
 
 
-    function print_info();
+    function void print_info();
         `uvm_info("Scoreboard", $sformatf("Transaction No: %d \n\n ", no_of_tr),
                   UVM_NONE)
 
