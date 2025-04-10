@@ -29,13 +29,22 @@ class transaction extends uvm_sequence_item;
         super.new(name);
     endfunction
 
-    function void do_print(uvm_printer printer);
-        super.do_print(printer);
-        printer.print_field_int("TMS", tms_pad_i, 1, UVM_HEX);
-        printer.print_field_int("TRST", trst_pad_i, 1, UVM_HEX);
-        printer.print_field_int("TDI", tdi_pad_i, 1, UVM_HEX);
-        printer.print_field_int("TDO", tdo_pad_o, 1, UVM_HEX);
-        printer.print_field_int("TDO_EN", tdo_padoe_o, 1, UVM_HEX);
+    // function void do_print(uvm_printer printer);
+    //     super.do_print(printer);
+    //     printer.print_field_int("TMS", tms_pad_i, 1, UVM_HEX);
+    //     printer.print_field_int("TRST", trst_pad_i, 1, UVM_HEX);
+    //     printer.print_field_int("TDI", tdi_pad_i, 1, UVM_HEX);
+    //     printer.print_field_int("TDO", tdo_pad_o, 1, UVM_HEX);
+    //     printer.print_field_int("TDO_EN", tdo_padoe_o, 1, UVM_HEX);
+    // endfunction
+
+    function convert2string();
+        string msg = $sformatf("TMS: %d, TRST: %d", tms_pad_i, trst_pad_i);
+
+        msg = {msg, $sformatf("TDI: %d", tdi_pad_i)};
+        msg = {msg, $sformatf("TDO: %d, TDO_EN: %d", tdo_pad_i, tdo_padoe_o)};
+
+        return msg;
     endfunction
 
 endclass
