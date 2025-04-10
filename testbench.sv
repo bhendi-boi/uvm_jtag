@@ -16,6 +16,7 @@ import uvm_pkg::*;
 module top ();
 
     logic tck_pad_i;
+
     initial begin
         tck_pad_i = 0;
         forever #10 tck_pad_i = ~tck_pad_i;
@@ -49,7 +50,8 @@ module top ();
     );
 
     initial begin
-        uvm_config_db#(virtual jtag_if)::set(null, "*", "vif", intf);
+        uvm_config_db#(virtual jtag_if)::set(null, "uvm_test_top*", "vif",
+                                             intf);
         run_test("random_test");
     end
 
