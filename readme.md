@@ -26,3 +26,13 @@ Instruction register length = 4
 | DEBUG          | 4'b1000 |
 | MBIST          | 4'b1001 |
 | BYPASS         | 4'b1111 |
+
+## Progress
+
+### Testing Reset
+
+- `reset_test` is used to test the reset mechanism of JTAG.
+- `sync_reset_seq` generated five consecutive cycles with `TMS` = 1.
+- design has 2 internal variables `tms_reset` and `test_logic_reset` to detect reset.
+- `tms_reset` is asserted after five consecutive cycles with `TMS` = 1.
+- `test_logic_reset` is the final signal which resets the DUT.
