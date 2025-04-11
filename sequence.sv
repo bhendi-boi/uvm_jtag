@@ -35,7 +35,7 @@ class sync_reset_seq extends uvm_sequence;
                     tr.trst_pad_i == 0;
                     tr.tms_pad_i == 1;
                 })
-                `uvm_fatal("Async Reset Sequence", "Randomisation failed")
+                `uvm_fatal("Sync Reset Sequence", "Randomisation failed")
             finish_item(tr);
         end
     endtask
