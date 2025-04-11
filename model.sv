@@ -113,7 +113,7 @@ function model_tap(input transaction tr, output transaction comp,
 
     `uvm_info("Model_SV", $sformatf(
               "Current State = %s, TMS = %d", TAP_STATE.name(), tr.tms_pad_i),
-              UVM_LOW)
+              UVM_HIGH)
 
 
     comp = tr;
@@ -122,11 +122,11 @@ function model_tap(input transaction tr, output transaction comp,
     comp.update_dr_o = 0;
 
     if (TAP_STATE == CAPTURE_DR) begin
-        `uvm_info("Model_SV", "Capture DR asserted", UVM_LOW)
+        `uvm_info("Model_SV", "Capture DR asserted", UVM_HIGH)
         comp.capture_dr_o = 1;
     end
     if (TAP_STATE == SHIFT_DR) begin
-        `uvm_info("Model_SV", "Shift DR asserted", UVM_LOW)
+        `uvm_info("Model_SV", "Shift DR asserted", UVM_HIGH)
         comp.shift_dr_o = 1;
     end
 
@@ -188,7 +188,7 @@ function model_tap(input transaction tr, output transaction comp,
         tms_count = 0;
     end else begin
         if (tms_count == 4) begin
-            `uvm_info("Model_SV", "Sync Reset Detected", UVM_LOW)
+            `uvm_info("Model_SV", "Sync Reset Detected", UVM_HIGH)
             tms_count = 0;
             is_sync_reset = 1;
         end else begin
