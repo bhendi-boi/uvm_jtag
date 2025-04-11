@@ -18,7 +18,7 @@ class scoreboard extends uvm_scoreboard;
 
     function void write(transaction tr);
         this.no_of_tr++;
-        // TODO
+        model_tap(tr.tms_pad_i, tr.trst_pad_i);
         print_info();
     endfunction
 

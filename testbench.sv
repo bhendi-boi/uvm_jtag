@@ -1,6 +1,7 @@
 import uvm_pkg::*;
 
 `include "uvm_macros.svh"
+`include "model.sv"
 `include "interface.sv"
 `include "seq_item.sv"
 `include "sequence.sv"
@@ -51,7 +52,8 @@ module top ();
     );
 
     initial begin
-        uvm_config_db#(virtual jtag_if)::set(null, "uvm_test_top*", "vif",intf);
+        uvm_config_db#(virtual jtag_if)::set(null, "uvm_test_top*", "vif",
+                                             intf);
         run_test("reset_test");
     end
 
