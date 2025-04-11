@@ -5,6 +5,7 @@ class scoreboard extends uvm_scoreboard;
 
     transaction tr;
     int no_of_tr;
+    bit is_sync_reset;
 
     function new(string name = "scoreboard", uvm_component parent);
         super.new(name, parent);
@@ -18,7 +19,18 @@ class scoreboard extends uvm_scoreboard;
 
     function void write(transaction tr);
         this.no_of_tr++;
-        model_tap(tr.tms_pad_i, tr.trst_pad_i);
+        model_tap(tr.tms_pad_i, tr.trst_pad_i, is_sync_reset);
+
+        if (is_sync_reset) begin
+            if (!sync_reset_check(
+                    tr.shift_dr_o,
+                    tr.pause_dr_o,
+                    tr.update_dr_o,
+                    tr.capture_dr_o
+                ))
+                `uvm_info("Scoreboard", "Sync Reset Check Passed", UVM_NONE)
+            else `uvm_error("Scoreboard", "Sync Reset Check Failed")
+        end
         print_info();
     endfunction
 

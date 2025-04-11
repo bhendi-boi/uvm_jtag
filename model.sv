@@ -87,7 +87,8 @@
 // endmodule
 
 
-function void model_tap(input bit tms, input bit trst);
+function void model_tap(input bit tms, input bit trst,
+                        output bit is_sync_reset);
 
     enum bit [3:0] {
         TEST_LOGIC_RESET = 0,
@@ -173,10 +174,23 @@ function void model_tap(input bit tms, input bit trst);
         if (tms_count == 4) begin
             `uvm_info("Model_SV", "Sync Reset Detected", UVM_LOW)
             tms_count = 0;
+            is_sync_reset = 1;
         end else begin
+            is_sync_reset = 0;
             if (tms) tms_count++;
             else tms_count = 0;
         end
     end
+
+endfunction
+
+
+function bit sync_reset_check(input bit shift_dr, input bit pause_dr,
+                              input bit update_dr, input bit capture_dr);
+
+    bit [3:0] temp;
+    temp = {shift_dr, pause_dr, update_dr, capture_dr};
+    if (temp == 4'b0000) return 0;
+    else return 1;
 
 endfunction
