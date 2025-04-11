@@ -11,6 +11,7 @@ import uvm_pkg::*;
 `include "scoreboard.sv"
 `include "environment.sv"
 `include "rand_test.sv"
+`include "reset_test.sv"
 
 
 module top ();
@@ -51,7 +52,7 @@ module top ();
 
     initial begin
         uvm_config_db#(virtual jtag_if)::set(null, "uvm_test_top*", "vif",intf);
-        run_test("rand_test");
+        run_test("reset_test");
     end
 
     initial begin
