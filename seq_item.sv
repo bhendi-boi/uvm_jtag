@@ -42,7 +42,7 @@ class transaction extends uvm_sequence_item;
         string msg = $sformatf("TMS: %d, TRST: %d", tms_pad_i, trst_pad_i);
 
         msg = {msg, $sformatf("TDI: %d", tdi_pad_i)};
-        msg = {msg, $sformatf("TDO: %d, TDO_EN: %d", tdo_pad_i, tdo_padoe_o)};
+        msg = {msg, $sformatf("TDO: %d, TDO_EN: %d", tdo_pad_o, tdo_padoe_o)};
 
         return msg;
     endfunction
