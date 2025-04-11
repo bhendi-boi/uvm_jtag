@@ -39,9 +39,9 @@ class transaction extends uvm_sequence_item;
     // endfunction
 
     function string convert2string();
-        string msg = $sformatf("TMS: %d, TRST: %d", tms_pad_i, trst_pad_i);
+        string msg = $sformatf("TMS: %d, TRST: %d, ", tms_pad_i, trst_pad_i);
 
-        msg = {msg, $sformatf("TDI: %d", tdi_pad_i)};
+        msg = {msg, $sformatf("TDI: %d, ", tdi_pad_i)};
         msg = {msg, $sformatf("TDO: %d, TDO_EN: %d", tdo_pad_o, tdo_padoe_o)};
 
         return msg;
