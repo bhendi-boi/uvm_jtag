@@ -3,9 +3,10 @@ class scoreboard extends uvm_scoreboard;
 
     uvm_analysis_imp #(transaction, scoreboard) scoreboard_port;
 
-    transaction tr;
+    transaction tr, comp;
     int no_of_tr;
     bit is_sync_reset;
+    bit are_same;
 
     function new(string name = "scoreboard", uvm_component parent);
         super.new(name, parent);
@@ -19,7 +20,10 @@ class scoreboard extends uvm_scoreboard;
 
     function void write(transaction tr);
         this.no_of_tr++;
-        model_tap(tr.tms_pad_i, tr.trst_pad_i, is_sync_reset);
+        model_tap(tr, comp, is_sync_reset);
+        are_same = tr.compare(comp);
+        if (are_same) `uvm_info("Scoreboard", "Tr are same", UVM_NONE)
+        else `uvm_error("Scoreboard", "Tr are different")
 
         if (is_sync_reset) begin
             if (!sync_reset_check(
@@ -31,6 +35,9 @@ class scoreboard extends uvm_scoreboard;
                 `uvm_info("Scoreboard", "Sync Reset Check Passed", UVM_NONE)
             else `uvm_error("Scoreboard", "Sync Reset Check Failed")
         end
+
+
+
         print_info();
     endfunction
 

@@ -37,6 +37,10 @@ class monitor extends uvm_monitor;
         tr.tdo_o = vif.tdo_o;
         tr.tdo_pad_o = vif.tdo_pad_o;
         tr.tdo_padoe_o = vif.tdo_padoe_o;
+        tr.shift_dr_o = vif.shift_dr_o;
+        tr.update_dr_o = vif.update_dr_o;
+        tr.capture_dr_o = vif.capture_dr_o;
+        tr.pause_dr_o = vif.pause_dr_o;
     endtask
 
 endclass
