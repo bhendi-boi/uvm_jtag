@@ -47,4 +47,24 @@ class transaction extends uvm_sequence_item;
         return msg;
     endfunction
 
+    function bit compare(transaction comp);
+        // inputs
+        if (this.tms_pad_i != comp.tms_pad_i) return 0;
+        if (this.trst_pad_i != comp.trst_pad_i) return 0;
+        if (this.tdi_pad_i != comp.tdi_pad_i) return 0;
+        if (this.debug_tdi_i != comp.debug_tdi_i) return 0;
+        if (this.bs_chain_tdi_i != comp.bs_chain_tdi_i) return 0;
+        if (this.mbist_tdi_i != comp.mbist_tdi_i) return 0;
+
+        // only checking for fields which are used
+        if (this.shift_dr_o != comp.shift_dr_o) return 0;
+        if (this.capture_dr_o != comp.capture_dr_o) return 0;
+        if (this.update_dr_o != comp.update_dr_o) return 0;
+        if (this.tdo_o != comp.tdo_o) return 0;
+        if (this.tdo_padoe_o != comp.tdo_padoe_o) return 0;
+
+        return 1;
+
+    endfunction
+
 endclass
