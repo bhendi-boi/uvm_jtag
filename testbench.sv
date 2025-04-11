@@ -50,9 +50,8 @@ module top ();
     );
 
     initial begin
-        uvm_config_db#(virtual jtag_if)::set(null, "uvm_test_top*", "vif",
-                                             intf);
-        run_test("random_test");
+        uvm_config_db#(virtual jtag_if)::set(null, "uvm_test_top*", "vif",intf);
+        run_test("rand_test");
     end
 
     initial begin
