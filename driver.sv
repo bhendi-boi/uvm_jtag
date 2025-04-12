@@ -36,6 +36,7 @@ class driver extends uvm_driver #(transaction);
         vif.debug_tdi_i <= tr.debug_tdi_i;
         vif.bs_chain_tdi_i <= tr.bs_chain_tdi_i;
         vif.mbist_tdi_i <= tr.mbist_tdi_i;
+        @(posedge vif.tck_pad_i);
     endtask
 
 endclass

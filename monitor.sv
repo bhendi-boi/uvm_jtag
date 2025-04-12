@@ -19,8 +19,6 @@ class monitor extends uvm_monitor;
 
     task run_phase(uvm_phase phase);
         tr = transaction::type_id::create("tr");
-        @(posedge vif.tck_pad_i);
-        // the above line ensures monitor and driver are in sync
         forever begin
             capture(tr);
             `uvm_info("Monitor", "Sampled a transaction", UVM_NONE)
@@ -30,6 +28,7 @@ class monitor extends uvm_monitor;
     endtask
 
     task capture(transaction tr);
+        @(posedge vif.tck_pad_i);
         @(posedge vif.tck_pad_i);
         tr.tms_pad_i = vif.tms_pad_i;
         tr.trst_pad_i = vif.trst_pad_i;
