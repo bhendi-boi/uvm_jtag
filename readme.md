@@ -44,3 +44,10 @@ Instruction register length = 4
 - Move TAP to SHIFT_IR.
 - Update IR to `IDCODE`.
 - Move TAP to SHIFT_DR and stay in the same state for 32 transactions while sampling `tdo_pad_o`.
+
+### EXTEST
+
+- Run `extest_test` to test the extest functionality of JTAG.
+- `extest_seq` loads `0000` into the instruction register.
+- Then it brings TAP to IDLE State.
+- `bs_chain_tdi` is connected to `tdo_pad_o`.
