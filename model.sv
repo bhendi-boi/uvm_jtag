@@ -33,6 +33,7 @@ function model_tap(input transaction tr, output transaction comp,
     static bit [31:0] id_code_value = 32'h149511c3;
     static int id_code_reg_index;  // variable used to move bit by bit
     static int tms_count = 0;
+    comp = transaction::type_id::create("transaction_comp");
 
     `uvm_info("Model_SV", $sformatf(
               "Current State = %s, TMS = %d, IR_REG = %0x",
@@ -42,7 +43,13 @@ function model_tap(input transaction tr, output transaction comp,
               ), UVM_HIGH)
 
 
-    comp = tr;
+    comp.tms_pad_i = tr.tms_pad_i;
+    comp.trst_pad_i = tr.trst_pad_i;
+    comp.tdi_pad_i = tr.tdi_pad_i;
+    comp.bs_chain_tdi_i = tr.bs_chain_tdi_i;
+    comp.debug_tdi_i = tr.debug_tdi_i;
+    comp.mbist_tdi_i = tr.mbist_tdi_i;
+
     comp.shift_dr_o = 0;
     comp.capture_dr_o = 0;
     comp.update_dr_o = 0;
@@ -80,6 +87,12 @@ function model_tap(input transaction tr, output transaction comp,
         `uvm_info("Model_SV", "PAUSE IR asserted", UVM_HIGH)
     end
 
+    if (TAP_STATE == IDLE) begin
+        if (IR_REG == `EXTEST) begin
+            `uvm_info("Model_SV", "EXTEST Detected", UVM_HIGH)
+            comp.tdo_pad_o = tr.bs_chain_tdi_i;
+        end
+    end
     if (TAP_STATE == CAPTURE_IR) begin
         IR_REG = 4'b0101;
     end
