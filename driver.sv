@@ -22,7 +22,6 @@ class driver extends uvm_driver #(transaction);
         forever begin
             seq_item_port.get_next_item(tr);
             drive(tr);
-            `uvm_info("Driver", "Drove a transaction", UVM_NONE)
             `uvm_info("Driver", tr.convert2string(), UVM_NONE)
             seq_item_port.item_done();
         end
@@ -36,7 +35,6 @@ class driver extends uvm_driver #(transaction);
         vif.debug_tdi_i <= tr.debug_tdi_i;
         vif.bs_chain_tdi_i <= tr.bs_chain_tdi_i;
         vif.mbist_tdi_i <= tr.mbist_tdi_i;
-        @(posedge vif.tck_pad_i);
     endtask
 
 endclass
