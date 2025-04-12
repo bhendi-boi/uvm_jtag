@@ -30,9 +30,12 @@ class driver extends uvm_driver #(transaction);
 
     task drive(transaction tr);
         @(posedge vif.tck_pad_i);
-        vif.tms_pad_i  <= tr.tms_pad_i;
+        vif.tms_pad_i <= tr.tms_pad_i;
         vif.trst_pad_i <= tr.trst_pad_i;
-        vif.tdi_pad_i  <= tr.tdi_pad_i;
+        vif.tdi_pad_i <= tr.tdi_pad_i;
+        vif.debug_tdi_i <= tr.debug_tdi_i;
+        vif.bs_chain_tdi_i <= tr.bs_chain_tdi_i;
+        vif.mbist_tdi_i <= tr.mbist_tdi_i;
     endtask
 
 endclass
