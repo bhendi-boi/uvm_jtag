@@ -194,11 +194,12 @@ class extest_seq extends uvm_sequence;
     // 5 1's for bringing TAP to reset
     // Next 5 for bringing TAP to SHIFT_IR
     // Next 2 to keep the TAP in SHIFT_IR
+    // Next 3 for bringing TAP to IDLE
     bit setup_with_tms[] = {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0};
     rand bit setup_with_tdi[$];
 
     constraint setup_ir_to_0010 {
-        setup_with_tdi.size() == 15;
+        setup_with_tdi.size() == setup_with_tms.size();
         setup_with_tdi[10] == 0;
         setup_with_tdi[11] == 0;
         setup_with_tdi[12] == 0;
@@ -232,7 +233,6 @@ class extest_seq extends uvm_sequence;
 
         end
 
-        // extracting ID_CODE
         repeat (no_of_tr) begin
             start_item(tr);
             if (!tr.randomize() with {
