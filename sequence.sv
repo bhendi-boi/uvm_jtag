@@ -237,7 +237,7 @@ class extest_seq extends uvm_sequence;
             start_item(tr);
             if (!tr.randomize() with {
                     tr.trst_pad_i == 0;
-                    tr.tms_pad_i == 0;  // Keeping TAP in ShiftDR State
+                    tr.tms_pad_i == 0;  // Keeping TAP in IDLE State
                 })
                 `uvm_fatal("EXTEST Sequence", "Randomisation failed")
             finish_item(tr);
