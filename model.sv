@@ -1,6 +1,6 @@
 typedef transaction;
-function model_tap(input transaction tr, output transaction comp,
-                   output bit is_sync_reset, output bit id_code_test_complete);
+task model_tap(input transaction tr, output transaction comp,
+               output bit is_sync_reset, output bit id_code_test_complete);
 
     enum bit [3:0] {
         TEST_LOGIC_RESET = 0,
@@ -30,17 +30,16 @@ function model_tap(input transaction tr, output transaction comp,
     `define BYPASS 4'b1111
 
     static bit [3:0] IR_REG;
-    static bit [31:0] id_code_value = 32'h149511c3;
+    static
+    bit [31:0]
+    id_code_value = 32'h149511c3;  // TODO: Should not be static. 
     static int id_code_reg_index;  // variable used to move bit by bit
     static int tms_count = 0;
     comp = transaction::type_id::create("transaction_comp");
 
-    `uvm_info("Model_SV", $sformatf(
-              "Current State = %s, TMS = %d, IR_REG = %0x",
-              TAP_STATE.name(),
-              tr.tms_pad_i,
-              IR_REG
-              ), UVM_HIGH)
+    `uvm_info("Model_SV",
+              $sformatf("Current State = %s, TMS = %d, IR_REG = %0x",
+                        TAP_STATE.name(), tr.tms_pad_i, IR_REG), UVM_HIGH)
 
 
     comp.tms_pad_i = tr.tms_pad_i;
@@ -58,116 +57,132 @@ function model_tap(input transaction tr, output transaction comp,
     comp.tdo_o = tr.tdi_pad_i;
     comp.tdo_pad_o = 0;
 
-    // Debug statements for DR Assertion
-    if (TAP_STATE == CAPTURE_DR) begin
-        `uvm_info("Model_SV", "Capture DR asserted", UVM_HIGH)
-        comp.capture_dr_o = 1;
-    end
-    if (TAP_STATE == SHIFT_DR) begin
-        `uvm_info("Model_SV", "Shift DR asserted", UVM_HIGH)
-        comp.shift_dr_o = 1;
-    end
-    if (TAP_STATE == UPDATE_DR) begin
-        `uvm_info("Model_SV", "UPDATE DR asserted", UVM_HIGH)
-        comp.update_dr_o = 1;
-    end
-    if (TAP_STATE == PAUSE_DR) begin
-        `uvm_info("Model_SV", "PAUSE DR asserted", UVM_HIGH)
-        comp.pause_dr_o = 1;
-    end
+    fork
+        begin
+            begin
+                // Debug statements for DR Assertion
+                if (TAP_STATE == CAPTURE_DR) begin
+                    `uvm_info("Model_SV", "Capture DR asserted", UVM_HIGH)
+                    comp.capture_dr_o = 1;
+                end
+                if (TAP_STATE == SHIFT_DR) begin
+                    `uvm_info("Model_SV", "Shift DR asserted", UVM_HIGH)
+                    comp.shift_dr_o = 1;
+                end
+                if (TAP_STATE == UPDATE_DR) begin
+                    `uvm_info("Model_SV", "UPDATE DR asserted", UVM_HIGH)
+                    comp.update_dr_o = 1;
+                end
+                if (TAP_STATE == PAUSE_DR) begin
+                    `uvm_info("Model_SV", "PAUSE DR asserted", UVM_HIGH)
+                    comp.pause_dr_o = 1;
+                end
 
-    // Debug statements for IR Assertion
-    if (TAP_STATE == CAPTURE_IR) begin
-        `uvm_info("Model_SV", "Capture IR asserted", UVM_HIGH)
-    end
-    if (TAP_STATE == SHIFT_IR) begin
-        `uvm_info("Model_SV", "Shift IR asserted", UVM_HIGH)
-    end
-    if (TAP_STATE == UPDATE_IR) begin
-        `uvm_info("Model_SV", "UPDATE IR asserted", UVM_HIGH)
-    end
-    if (TAP_STATE == PAUSE_IR) begin
-        `uvm_info("Model_SV", "PAUSE IR asserted", UVM_HIGH)
-    end
+                if (TAP_STATE == TEST_LOGIC_RESET) begin
+                    IR_REG = 0;
+                end
 
-    if (TAP_STATE == IDLE) begin
-        if (IR_REG == `EXTEST) begin
-            `uvm_info("Model_SV", "EXTEST Detected", UVM_HIGH)
-            comp.tdo_pad_o = tr.bs_chain_tdi_i;
+                if (IR_REG == `IDCODE) begin
+                    comp.tdo_pad_o = id_code_value;
+                end
+
+                // Debug statements for IR Assertion
+                if (TAP_STATE == CAPTURE_IR) begin
+                    `uvm_info("Model_SV", "Capture IR asserted", UVM_HIGH)
+                end
+                if (TAP_STATE == SHIFT_IR) begin
+                    `uvm_info("Model_SV", "Shift IR asserted", UVM_HIGH)
+                end
+                if (TAP_STATE == UPDATE_IR) begin
+                    `uvm_info("Model_SV", "UPDATE IR asserted", UVM_HIGH)
+                end
+                if (TAP_STATE == PAUSE_IR) begin
+                    `uvm_info("Model_SV", "PAUSE IR asserted", UVM_HIGH)
+                end
+
+                if (TAP_STATE == IDLE) begin
+                    if (IR_REG == `EXTEST) begin
+                        `uvm_info("Model_SV", "EXTEST Detected", UVM_HIGH)
+                        comp.tdo_pad_o = tr.bs_chain_tdi_i;
+                    end
+                end
+                if (TAP_STATE == CAPTURE_IR) begin
+                    IR_REG = 4'b0101;
+                end
+
+                if (TAP_STATE == SHIFT_IR) begin
+                    comp.tdo_pad_o = IR_REG[0];
+                    IR_REG = {tr.tdi_pad_i, IR_REG[3:1]};
+                end
+
+                if (TAP_STATE == SHIFT_DR) begin
+                    if (IR_REG == `IDCODE) begin
+                        comp.tdo_pad_o = id_code_value[id_code_reg_index];
+                        id_code_test_complete = id_code_reg_index == 31 ? 1 : 0;
+                        id_code_reg_index = (id_code_reg_index + 1) % 32;
+                    end
+                end
+
+            end
+            // FSM LOGIC
+            begin
+                if (tr.trst_pad_i) begin
+                    TAP_STATE = TEST_LOGIC_RESET;
+                end else begin
+                    if (TAP_STATE == TEST_LOGIC_RESET) begin
+                        if (tr.tms_pad_i) TAP_STATE <= TEST_LOGIC_RESET;
+                        else TAP_STATE <= IDLE;
+                    end else if (TAP_STATE == IDLE) begin
+                        if (tr.tms_pad_i) TAP_STATE <= SELECT_DR;
+                        else TAP_STATE <= IDLE;
+                    end else if (TAP_STATE == SELECT_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= SELECT_IR;
+                        else TAP_STATE <= CAPTURE_DR;
+                    end else if (TAP_STATE == CAPTURE_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= EXIT_1_DR;
+                        else TAP_STATE <= SHIFT_DR;
+                    end else if (TAP_STATE == SHIFT_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= EXIT_1_DR;
+                        else TAP_STATE <= SHIFT_DR;
+                    end else if (TAP_STATE == EXIT_1_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= UPDATE_DR;
+                        else TAP_STATE <= PAUSE_DR;
+                    end else if (TAP_STATE == PAUSE_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= EXIT_2_DR;
+                        else TAP_STATE <= PAUSE_DR;
+                    end else if (TAP_STATE == EXIT_2_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= UPDATE_DR;
+                        else TAP_STATE <= SHIFT_DR;
+                    end else if (TAP_STATE == UPDATE_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= SELECT_DR;
+                        else TAP_STATE <= IDLE;
+                    end else if (TAP_STATE == SELECT_IR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= TEST_LOGIC_RESET;
+                        else TAP_STATE <= CAPTURE_IR;
+                    end else if (TAP_STATE == CAPTURE_IR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= EXIT_1_IR;
+                        else TAP_STATE <= SHIFT_IR;
+                    end else if (TAP_STATE == SHIFT_IR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= EXIT_1_IR;
+                        else TAP_STATE <= SHIFT_IR;
+                    end else if (TAP_STATE == EXIT_1_IR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= UPDATE_IR;
+                        else TAP_STATE <= PAUSE_IR;
+                    end else if (TAP_STATE == PAUSE_IR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= EXIT_2_IR;
+                        else TAP_STATE <= PAUSE_IR;
+                    end else if (TAP_STATE == EXIT_2_DR) begin
+                        if (tr.tms_pad_i) TAP_STATE <= UPDATE_IR;
+                        else TAP_STATE <= SHIFT_IR;
+                    end else begin
+                        if (tr.tms_pad_i) TAP_STATE <= SELECT_DR;
+                        else TAP_STATE <= IDLE;
+                    end
+                end
+            end
+
         end
-    end
-    if (TAP_STATE == CAPTURE_IR) begin
-        IR_REG = 4'b0101;
-    end
-
-    if (TAP_STATE == SHIFT_IR) begin
-        comp.tdo_pad_o = IR_REG[0];
-        IR_REG = {tr.tdi_pad_i, IR_REG[3:1]};
-    end
-
-    if (TAP_STATE == SHIFT_DR) begin
-        if (IR_REG == `IDCODE) begin
-            comp.tdo_pad_o = id_code_value[id_code_reg_index];
-            id_code_test_complete = id_code_reg_index == 31 ? 1 : 0;
-            id_code_reg_index = (id_code_reg_index + 1) % 32;
-        end
-    end
-
-    // FSM LOGIC
-    if (tr.trst_pad_i) begin
-        TAP_STATE = TEST_LOGIC_RESET;
-    end else begin
-        if (TAP_STATE == TEST_LOGIC_RESET) begin
-            if (tr.tms_pad_i) TAP_STATE <= TEST_LOGIC_RESET;
-            else TAP_STATE <= IDLE;
-        end else if (TAP_STATE == IDLE) begin
-            if (tr.tms_pad_i) TAP_STATE <= SELECT_DR;
-            else TAP_STATE <= IDLE;
-        end else if (TAP_STATE == SELECT_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= SELECT_IR;
-            else TAP_STATE <= CAPTURE_DR;
-        end else if (TAP_STATE == CAPTURE_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= EXIT_1_DR;
-            else TAP_STATE <= SHIFT_DR;
-        end else if (TAP_STATE == SHIFT_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= EXIT_1_DR;
-            else TAP_STATE <= SHIFT_DR;
-        end else if (TAP_STATE == EXIT_1_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= UPDATE_DR;
-            else TAP_STATE <= PAUSE_DR;
-        end else if (TAP_STATE == PAUSE_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= EXIT_2_DR;
-            else TAP_STATE <= PAUSE_DR;
-        end else if (TAP_STATE == EXIT_2_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= UPDATE_DR;
-            else TAP_STATE <= SHIFT_DR;
-        end else if (TAP_STATE == UPDATE_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= SELECT_DR;
-            else TAP_STATE <= IDLE;
-        end else if (TAP_STATE == SELECT_IR) begin
-            if (tr.tms_pad_i) TAP_STATE <= TEST_LOGIC_RESET;
-            else TAP_STATE <= CAPTURE_IR;
-        end else if (TAP_STATE == CAPTURE_IR) begin
-            if (tr.tms_pad_i) TAP_STATE <= EXIT_1_IR;
-            else TAP_STATE <= SHIFT_IR;
-        end else if (TAP_STATE == SHIFT_IR) begin
-            if (tr.tms_pad_i) TAP_STATE <= EXIT_1_IR;
-            else TAP_STATE <= SHIFT_IR;
-        end else if (TAP_STATE == EXIT_1_IR) begin
-            if (tr.tms_pad_i) TAP_STATE <= UPDATE_IR;
-            else TAP_STATE <= PAUSE_IR;
-        end else if (TAP_STATE == PAUSE_IR) begin
-            if (tr.tms_pad_i) TAP_STATE <= EXIT_2_IR;
-            else TAP_STATE <= PAUSE_IR;
-        end else if (TAP_STATE == EXIT_2_DR) begin
-            if (tr.tms_pad_i) TAP_STATE <= UPDATE_IR;
-            else TAP_STATE <= SHIFT_IR;
-        end else begin
-            if (tr.tms_pad_i) TAP_STATE <= SELECT_DR;
-            else TAP_STATE <= IDLE;
-        end
-    end
-
+    join
     // Sync Reset Detection (TMS = 1 for 5 consecutive cycles)
     if (tr.trst_pad_i) begin
         tms_count = 0;
@@ -183,7 +198,7 @@ function model_tap(input transaction tr, output transaction comp,
         end
     end
 
-endfunction
+endtask
 
 
 function bit sync_reset_check(input bit shift_dr, input bit pause_dr,
