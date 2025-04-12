@@ -62,6 +62,7 @@ class transaction extends uvm_sequence_item;
         if (this.update_dr_o != comp.update_dr_o) return 0;
         if (this.tdo_o != comp.tdo_o) return 0;
         if (this.tdo_padoe_o != comp.tdo_padoe_o) return 0;
+        if (this.tdo_pad_o != comp.tdo_pad_o) return 0;
 
         return 1;
 
