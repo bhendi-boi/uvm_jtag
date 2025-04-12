@@ -38,6 +38,8 @@ task model_tap(input transaction tr, output transaction comp,
     id_code_value = 32'h149511c3;  // TODO: Should not be static. 
     static int id_code_reg_index;  // variable used to move bit by bit
     static int tms_count = 0;
+    static bit bypass_reg;
+
     comp = transaction::type_id::create("transaction_comp");
 
     `uvm_info("Model_SV",
@@ -84,6 +86,7 @@ task model_tap(input transaction tr, output transaction comp,
                 if (TAP_STATE == TEST_LOGIC_RESET) begin
                     ir_reg = 0;
                     IR_REG = `IDCODE; // Don't get fooled by line 374; Take a look at line 447 in design.
+                    bypass_reg = 0;
                 end
 
                 if (IR_REG == `IDCODE) begin
@@ -128,6 +131,12 @@ task model_tap(input transaction tr, output transaction comp,
                         id_code_test_complete = id_code_reg_index == 31 ? 1 : 0;
                         id_code_reg_index = (id_code_reg_index + 1) % 32;
                     end
+                    if (IR_REG == `BYPASS) begin
+                        comp.tdo_pad_o = bypass_reg;
+                        `uvm_info("Model_SV", "Bypass Detected", UVM_HIGH)
+                    end
+                    // added this statement here so that bypass_reg lags a cycle
+                    bypass_reg = comp.tdi_pad_i;
                 end
 
             end
