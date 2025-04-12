@@ -101,6 +101,7 @@ function model_tap(input transaction tr, output transaction comp,
     end
 
     if (TAP_STATE == SHIFT_IR) begin
+        comp.tdo_pad_o = IR_REG[0];
         IR_REG = {tr.tdi_pad_i, IR_REG[3:1]};
     end
 
