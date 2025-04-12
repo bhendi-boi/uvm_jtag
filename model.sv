@@ -1,91 +1,3 @@
-// module TAP (
-//     tap_intf.tap_port port
-// );
-
-
-
-// task display_current_state();
-//     $display("Current State = %s, TMS = %d", TAP_STATE.name(), port.tms);
-// endtask
-
-//     task reset_all_signals();
-//         port.selectDR  = 0;
-//         port.captureDR = 0;
-//         port.shiftDR   = 0;
-//         port.updateDR  = 0;
-//         port.selectIR  = 0;
-//         port.captureIR = 0;
-//         port.shiftIR   = 0;
-//         port.updateIR  = 0;
-//     endtask
-
-//     task assert_select_dr();
-//         port.selectDR = 1;
-//         $display("Asserting selectDR signal");
-//     endtask
-
-//     task assert_capture_dr();
-//         @(negedge port.tck) port.captureDR = 1;
-//         $display("Asserting captureDR signal on negedge of tck");
-//     endtask
-
-//     task assert_shift_dr();
-//         port.shiftDR = 1;
-//         $display("Asserting shiftDR signal");
-//     endtask
-
-//     task assert_update_dr();
-//         port.updateDR = 1;
-//         $display("Asserting updateDR signal");
-//     endtask
-
-//     task assert_select_ir();
-//         port.selectIR = 1;
-//         $display("Asserting selectIR signal");
-//     endtask
-
-//     task assert_capture_ir();
-//         @(negedge port.tck) port.captureIR = 1;
-//         $display("Asserting captureIR signal on negedge of tck");
-//     endtask
-
-//     task assert_shift_ir();
-//         port.shiftIR = 1;
-//         $display("Asserting shiftIR signal");
-//     endtask
-
-//     task assert_update_ir();
-//         port.updateIR = 1;
-//         $display("Asserting updateIR signal");
-//     endtask
-
-//     always @(posedge port.tck) begin
-
-//         display_current_state();
-//         reset_all_signals();
-
-// if (TAP_STATE == SELECT_DR) assert_select_dr();
-// if (TAP_STATE == CAPTURE_DR) assert_capture_dr();
-// if (TAP_STATE == SHIFT_DR) assert_shift_dr();
-
-
-
-
-//         if (tms_count == 4) begin
-//             $display("Synchronous rest");
-//             tms_count = 0;
-//         end else begin
-//             if (port.tms) tms_count++;
-//             else begin
-//                 tms_count = 0;
-//             end
-//         end
-
-//         $display("\n");
-//     end
-
-// endmodule
-
 typedef transaction;
 function model_tap(input transaction tr, output transaction comp,
                    output bit is_sync_reset);
@@ -120,6 +32,7 @@ function model_tap(input transaction tr, output transaction comp,
     comp.shift_dr_o = 0;
     comp.capture_dr_o = 0;
     comp.update_dr_o = 0;
+    comp.pause_dr_o = 0;
 
     if (TAP_STATE == CAPTURE_DR) begin
         `uvm_info("Model_SV", "Capture DR asserted", UVM_HIGH)
@@ -128,6 +41,28 @@ function model_tap(input transaction tr, output transaction comp,
     if (TAP_STATE == SHIFT_DR) begin
         `uvm_info("Model_SV", "Shift DR asserted", UVM_HIGH)
         comp.shift_dr_o = 1;
+    end
+    if (TAP_STATE == UPDATE_DR) begin
+        `uvm_info("Model_SV", "UPDATE DR asserted", UVM_HIGH)
+        comp.update_dr_o = 1;
+    end
+    if (TAP_STATE == PAUSE_DR) begin
+        `uvm_info("Model_SV", "PAUSE DR asserted", UVM_HIGH)
+        comp.pause_dr_o = 1;
+    end
+
+
+    if (TAP_STATE == CAPTURE_IR) begin
+        `uvm_info("Model_SV", "Capture IR asserted", UVM_HIGH)
+    end
+    if (TAP_STATE == SHIFT_IR) begin
+        `uvm_info("Model_SV", "Shift IR asserted", UVM_HIGH)
+    end
+    if (TAP_STATE == UPDATE_IR) begin
+        `uvm_info("Model_SV", "UPDATE IR asserted", UVM_HIGH)
+    end
+    if (TAP_STATE == PAUSE_IR) begin
+        `uvm_info("Model_SV", "PAUSE IR asserted", UVM_HIGH)
     end
 
     if (tr.trst_pad_i) begin
