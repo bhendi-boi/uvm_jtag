@@ -29,7 +29,10 @@ task model_tap(input transaction tr, output transaction comp,
     `define MBIST 4'b1001
     `define BYPASS 4'b1111
 
-    static bit [3:0] IR_REG;
+    // captial one is used for deciding output
+    // small one is temp variable which is copied to capital one
+    // when UPDATE_IR is asserted
+    static bit [3:0] IR_REG, ir_reg;
     static
     bit [31:0]
     id_code_value = 32'h149511c3;  // TODO: Should not be static. 
@@ -79,7 +82,8 @@ task model_tap(input transaction tr, output transaction comp,
                 end
 
                 if (TAP_STATE == TEST_LOGIC_RESET) begin
-                    IR_REG = 0;
+                    ir_reg = 0;
+                    IR_REG = `IDCODE; // Don't get fooled by line 374; Take a look at line 447 in design.
                 end
 
                 if (IR_REG == `IDCODE) begin
@@ -107,14 +111,17 @@ task model_tap(input transaction tr, output transaction comp,
                     end
                 end
                 if (TAP_STATE == CAPTURE_IR) begin
-                    IR_REG = 4'b0101;
+                    ir_reg = 4'b0101;
                 end
 
                 if (TAP_STATE == SHIFT_IR) begin
-                    comp.tdo_pad_o = IR_REG[0];
-                    IR_REG = {tr.tdi_pad_i, IR_REG[3:1]};
+                    comp.tdo_pad_o = ir_reg[0];
+                    ir_reg = {tr.tdi_pad_i, ir_reg[3:1]};
                 end
 
+                if (TAP_STATE == UPDATE_IR) begin
+                    IR_REG = ir_reg;
+                end
                 if (TAP_STATE == SHIFT_DR) begin
                     if (IR_REG == `IDCODE) begin
                         comp.tdo_pad_o = id_code_value[id_code_reg_index];
