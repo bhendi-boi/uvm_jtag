@@ -35,8 +35,11 @@ function model_tap(input transaction tr, output transaction comp,
     static int tms_count = 0;
 
     `uvm_info("Model_SV", $sformatf(
-              "Current State = %s, TMS = %d", TAP_STATE.name(), tr.tms_pad_i),
-              UVM_HIGH)
+              "Current State = %s, TMS = %d, IR_REG = %0x",
+              TAP_STATE.name(),
+              tr.tms_pad_i,
+              IR_REG
+              ), UVM_HIGH)
 
 
     comp = tr;
@@ -75,6 +78,22 @@ function model_tap(input transaction tr, output transaction comp,
     end
     if (TAP_STATE == PAUSE_IR) begin
         `uvm_info("Model_SV", "PAUSE IR asserted", UVM_HIGH)
+    end
+
+    if (TAP_STATE == CAPTURE_IR) begin
+        IR_REG = 4'b0101;
+    end
+
+    if (TAP_STATE == SHIFT_IR) begin
+        IR_REG = {tr.tdi_pad_i, IR_REG[3:1]};
+    end
+
+    if (TAP_STATE == SHIFT_DR) begin
+        if (IR_REG == `IDCODE) begin
+            comp.tdo_pad_o = id_code_value[id_code_reg_index];
+            id_code_test_complete = id_code_reg_index == 31 ? 1 : 0;
+            id_code_reg_index = (id_code_reg_index + 1) % 32;
+        end
     end
 
     // FSM LOGIC
@@ -144,23 +163,6 @@ function model_tap(input transaction tr, output transaction comp,
             is_sync_reset = 0;
             if (tr.tms_pad_i) tms_count++;
             else tms_count = 0;
-        end
-    end
-
-
-    if (TAP_STATE == CAPTURE_IR) begin
-        IR_REG = 4'b0101;
-    end
-
-    if (TAP_STATE == SHIFT_IR) begin
-        IR_REG = {comp.tdi_pad_i, IR_REG[2:0]};
-    end
-
-    if (TAP_STATE == SHIFT_DR) begin
-        if (IR_REG == `IDCODE) begin
-            comp.tdo_pad_o = id_code_value[id_code_reg_index];
-            id_code_test_complete = id_code_reg_index == 31 ? 1 : 0;
-            id_code_reg_index = (id_code_reg_index + 1) % 31;
         end
     end
 
