@@ -79,11 +79,11 @@ class sample_prelaod_seq extends uvm_sequence;
     // 5 1's for bringing TAP to reset
     // Next 5 for bringing TAP to SHIFT_IR
     // Next 2 to keep the TAP in SHIFT_IR
-    bit setup_with_tms[] = {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0};
+    bit setup_with_tms[] = {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1};
     rand bit setup_with_tdi[$];
 
     constraint setup_ir_to_0001 {
-        setup_with_tdi.size() == 12;
+        setup_with_tdi.size() == 14;
         setup_with_tdi[10] == 0;
         setup_with_tdi[11] == 0;
     }
@@ -179,6 +179,67 @@ class id_code_seq extends uvm_sequence;
                     tr.tms_pad_i == 0;  // Keeping TAP in ShiftDR State
                 })
                 `uvm_fatal("ID Code Sequence", "Randomisation failed")
+            finish_item(tr);
+        end
+    endtask
+
+endclass
+
+class extest_seq extends uvm_sequence;
+    `uvm_object_utils(extest_seq)
+
+    rand transaction tr;
+    int no_of_tr;
+
+    // 5 1's for bringing TAP to reset
+    // Next 5 for bringing TAP to SHIFT_IR
+    // Next 2 to keep the TAP in SHIFT_IR
+    bit setup_with_tms[] = {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0};
+    rand bit setup_with_tdi[$];
+
+    constraint setup_ir_to_0010 {
+        setup_with_tdi.size() == 15;
+        setup_with_tdi[10] == 0;
+        setup_with_tdi[11] == 0;
+        setup_with_tdi[12] == 0;
+    }
+
+    function new(string name = "extest_seq");
+        super.new(name);
+        if (!randomize(setup_with_tdi))
+            `uvm_fatal("EXTEST Sequence", "TDI randomization failed")
+        `uvm_info("TDI", $sformatf("Randomized TDI: %p", setup_with_tdi),
+                  UVM_HIGH)
+        this.set_no_of_tr(32);
+    endfunction
+
+    function void set_no_of_tr(int no_of_tr);
+        this.no_of_tr = no_of_tr;
+    endfunction
+
+    task body();
+        tr = transaction::type_id::create("tr");
+
+        foreach (setup_with_tms[i]) begin
+            start_item(tr);
+            if (!tr.randomize() with {
+                    tr.trst_pad_i == 0;
+                    tr.tms_pad_i == setup_with_tms[i];
+                    tr.tdi_pad_i == setup_with_tdi[i];
+                })
+                `uvm_fatal("EXTEST Sequence", "Randomisation failed")
+            finish_item(tr);
+
+        end
+
+        // extracting ID_CODE
+        repeat (no_of_tr) begin
+            start_item(tr);
+            if (!tr.randomize() with {
+                    tr.trst_pad_i == 0;
+                    tr.tms_pad_i == 0;  // Keeping TAP in ShiftDR State
+                })
+                `uvm_fatal("EXTEST Sequence", "Randomisation failed")
             finish_item(tr);
         end
     endtask
