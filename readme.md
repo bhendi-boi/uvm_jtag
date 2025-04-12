@@ -36,3 +36,11 @@ Instruction register length = 4
 - design has 2 internal variables `tms_reset` and `test_logic_reset` to detect reset.
 - `tms_reset` is asserted after five consecutive cycles with `TMS` = 1.
 - `test_logic_reset` is the final signal which resets the DUT.
+
+### IDCODE
+
+- `IDCODE` instruction register is `0100`.
+- `id_code_seq` generates five consecutive cycles with `TMS` = 1.
+- Move TAP to SHIFT_IR.
+- Update IR to `IDCODE`.
+- Move TAP to SHIFT_DR and stay in the same state for 32 transactions while sampling `tdo_pad_o`.
