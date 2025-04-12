@@ -51,3 +51,10 @@ Instruction register length = 4
 - `extest_seq` loads `0000` into the instruction register.
 - Then it brings TAP to IDLE State.
 - `bs_chain_tdi` is connected to `tdo_pad_o`.
+
+### BYPASS
+
+- Run `bypass_test` to test the bypass functionality of JTAG.
+- `bypass_seq` load `1111` into the instruction register.
+- Then it brings TAP to SHIFT_DR state.
+- `tdo_pad_o` lags `tdi_pad` by one cycle.
