@@ -69,3 +69,118 @@ class rand_seq extends uvm_sequence;
     endtask
 
 endclass
+
+class sample_prelaod_seq extends uvm_sequence;
+    `uvm_object_utils(sample_prelaod_seq)
+
+    rand transaction tr;
+    int no_of_tr;
+
+    // 5 1's for bringing TAP to reset
+    // Next 5 for bringing TAP to SHIFT_IR
+    // Next 2 to keep the TAP in SHIFT_IR
+    bit setup_with_tms[] = {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0};
+    rand bit setup_with_tdi[$];
+
+    constraint setup_ir_to_0001 {
+        setup_with_tdi.size() == 12;
+        setup_with_tdi[10] == 0;
+        setup_with_tdi[11] == 0;
+    }
+
+    function new(string name = "sample_prelaod_seq");
+        super.new(name);
+        if (!randomize(setup_with_tdi))
+            `uvm_fatal("Sample Preload Sequence", "TDI randomization failed")
+        `uvm_info("TDI", $sformatf("Randomized TDI: %p", setup_with_tdi),
+                  UVM_HIGH)
+        this.set_no_of_tr(1);
+    endfunction
+
+    function void set_no_of_tr(int no_of_tr);
+        this.no_of_tr = no_of_tr;
+    endfunction
+
+    task body();
+        tr = transaction::type_id::create("tr");
+
+        foreach (setup_with_tms[i]) begin
+            start_item(tr);
+            if (!tr.randomize() with {
+                    tr.trst_pad_i == 0;
+                    tr.tms_pad_i == setup_with_tms[i];
+                    tr.tdi_pad_i == setup_with_tdi[i];
+                })
+                `uvm_fatal("Sample Preload Sequence", "Randomisation failed")
+            finish_item(tr);
+
+        end
+        // repeat (no_of_tr) begin
+        //     start_item(tr);
+        //     if (!tr.randomize() with {tr.trst_pad_i == 0;})
+        //         `uvm_fatal("Sample Preload Sequence", "Randomisation failed")
+        //     finish_item(tr);
+        // end
+    endtask
+
+endclass
+
+
+class id_code_seq extends uvm_sequence;
+    `uvm_object_utils(id_code_seq)
+
+    rand transaction tr;
+    int no_of_tr;
+
+    // 5 1's for bringing TAP to reset
+    // Next 5 for bringing TAP to SHIFT_IR
+    // Next 1 to keep the TAP in SHIFT_IR
+    bit setup_with_tms[] = {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0};
+    rand bit setup_with_tdi[$];
+
+    constraint setup_ir_to_0010 {
+        setup_with_tdi.size() == 15;
+        setup_with_tdi[10] == 0;
+    }
+
+    function new(string name = "id_code_seq");
+        super.new(name);
+        if (!randomize(setup_with_tdi))
+            `uvm_fatal("ID Code Sequence", "TDI randomization failed")
+        `uvm_info("TDI", $sformatf("Randomized TDI: %p", setup_with_tdi),
+                  UVM_HIGH)
+        this.set_no_of_tr(32);
+    endfunction
+
+    function void set_no_of_tr(int no_of_tr);
+        this.no_of_tr = no_of_tr;
+    endfunction
+
+    task body();
+        tr = transaction::type_id::create("tr");
+
+        foreach (setup_with_tms[i]) begin
+            start_item(tr);
+            if (!tr.randomize() with {
+                    tr.trst_pad_i == 0;
+                    tr.tms_pad_i == setup_with_tms[i];
+                    tr.tdi_pad_i == setup_with_tdi[i];
+                })
+                `uvm_fatal("ID Code Sequence", "Randomisation failed")
+            finish_item(tr);
+
+        end
+
+        // extracting ID_CODE
+        repeat (no_of_tr) begin
+            start_item(tr);
+            if (!tr.randomize() with {
+                    tr.trst_pad_i == 0;
+                    tr.tms_pad_i == 0;  // Keeping TAP in ShiftDR State
+                })
+                `uvm_fatal("ID Code Sequence", "Randomisation failed")
+            finish_item(tr);
+        end
+    endtask
+
+endclass
