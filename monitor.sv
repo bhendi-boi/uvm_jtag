@@ -42,6 +42,10 @@ class monitor extends uvm_monitor;
         tr.update_dr_o = vif.update_dr_o;
         tr.capture_dr_o = vif.capture_dr_o;
         tr.pause_dr_o = vif.pause_dr_o;
+        tr.extest_select_o = vif.extest_select_o;
+        tr.sample_preload_select_o = vif.sample_preload_select_o;
+        tr.mbist_select_o = vif.mbist_select_o;
+        tr.debug_select_o = vif.debug_select_o;
     endtask
 
 endclass
