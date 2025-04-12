@@ -6,6 +6,7 @@ class scoreboard extends uvm_scoreboard;
     transaction tr, comp;
     int no_of_tr;
     bit is_sync_reset;
+    bit id_code_test_complete;
     bit are_same;
 
     function new(string name = "scoreboard", uvm_component parent);
@@ -20,7 +21,7 @@ class scoreboard extends uvm_scoreboard;
 
     function void write(transaction tr);
         this.no_of_tr++;
-        model_tap(tr, comp, is_sync_reset);
+        model_tap(tr, comp, is_sync_reset, id_code_test_complete);
         are_same = tr.compare(comp);
         if (are_same) `uvm_info("Scoreboard", "Tr are same", UVM_NONE)
         else `uvm_error("Scoreboard", "Tr are different")
@@ -36,6 +37,8 @@ class scoreboard extends uvm_scoreboard;
             else `uvm_error("Scoreboard", "Sync Reset Check Failed")
         end
 
+        if (id_code_test_complete)
+            `uvm_info("Scoreboard", "ID CODE Test Complete", UVM_NONE)
 
 
         print_info();

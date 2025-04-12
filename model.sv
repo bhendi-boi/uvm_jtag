@@ -1,6 +1,6 @@
 typedef transaction;
 function model_tap(input transaction tr, output transaction comp,
-                   output bit is_sync_reset);
+                   output bit is_sync_reset, output bit id_code_test_complete);
 
     enum bit [3:0] {
         TEST_LOGIC_RESET = 0,
@@ -21,6 +21,17 @@ function model_tap(input transaction tr, output transaction comp,
         UPDATE_IR = 15
     } TAP_STATE;
 
+    // Supported Instructions
+    `define EXTEST 4'b0000
+    `define SAMPLE_PRELOAD 4'b0001
+    `define IDCODE 4'b0010
+    `define DEBUG 4'b1000
+    `define MBIST 4'b1001
+    `define BYPASS 4'b1111
+
+    static bit [3:0] IR_REG;
+    static bit [31:0] id_code_value = 32'h149511c3;
+    static int id_code_reg_index;  // variable used to move bit by bit
     static int tms_count = 0;
 
     `uvm_info("Model_SV", $sformatf(
@@ -34,6 +45,7 @@ function model_tap(input transaction tr, output transaction comp,
     comp.update_dr_o = 0;
     comp.pause_dr_o = 0;
 
+    // Debug statements for DR Assertion
     if (TAP_STATE == CAPTURE_DR) begin
         `uvm_info("Model_SV", "Capture DR asserted", UVM_HIGH)
         comp.capture_dr_o = 1;
@@ -51,7 +63,7 @@ function model_tap(input transaction tr, output transaction comp,
         comp.pause_dr_o = 1;
     end
 
-
+    // Debug statements for IR Assertion
     if (TAP_STATE == CAPTURE_IR) begin
         `uvm_info("Model_SV", "Capture IR asserted", UVM_HIGH)
     end
@@ -65,6 +77,7 @@ function model_tap(input transaction tr, output transaction comp,
         `uvm_info("Model_SV", "PAUSE IR asserted", UVM_HIGH)
     end
 
+    // FSM LOGIC
     if (tr.trst_pad_i) begin
         TAP_STATE = TEST_LOGIC_RESET;
     end else begin
@@ -119,6 +132,7 @@ function model_tap(input transaction tr, output transaction comp,
         end
     end
 
+    // Sync Reset Detection (TMS = 1 for 5 consecutive cycles)
     if (tr.trst_pad_i) begin
         tms_count = 0;
     end else begin
@@ -130,6 +144,23 @@ function model_tap(input transaction tr, output transaction comp,
             is_sync_reset = 0;
             if (tr.tms_pad_i) tms_count++;
             else tms_count = 0;
+        end
+    end
+
+
+    if (TAP_STATE == CAPTURE_IR) begin
+        IR_REG = 4'b0101;
+    end
+
+    if (TAP_STATE == SHIFT_IR) begin
+        IR_REG = {comp.tdi_pad_i, IR_REG[2:0]};
+    end
+
+    if (TAP_STATE == SHIFT_DR) begin
+        if (IR_REG == `IDCODE) begin
+            comp.tdo_pad_o = id_code_value[id_code_reg_index];
+            id_code_test_complete = id_code_reg_index == 31 ? 1 : 0;
+            id_code_reg_index = (id_code_reg_index + 1) % 31;
         end
     end
 
