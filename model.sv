@@ -55,6 +55,9 @@ function model_tap(input transaction tr, output transaction comp,
     comp.update_dr_o = 0;
     comp.pause_dr_o = 0;
 
+    comp.tdo_o = tr.tdi_pad_i;
+    comp.tdo_pad_o = 0;
+
     // Debug statements for DR Assertion
     if (TAP_STATE == CAPTURE_DR) begin
         `uvm_info("Model_SV", "Capture DR asserted", UVM_HIGH)
