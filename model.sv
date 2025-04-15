@@ -1,4 +1,3 @@
-typedef transaction;
 task model_tap(input transaction tr, output transaction comp,
                output bit is_sync_reset, output bit id_code_test_complete);
 

@@ -1,10 +1,12 @@
+`include "../agent/agent_pkg.sv"
+
 package test_pkg;
 
     import uvm_pkg::*;
     `include "uvm_macros.svh"
-    `include "../apb/apb_pkg.sv"
-    import apb_pkg::*;
+    import agent_pkg::*;
 
+    `include "../model.sv"
     `include "scoreboard.sv"
     `include "environment.sv"
 
