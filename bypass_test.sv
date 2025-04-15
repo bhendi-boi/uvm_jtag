@@ -1,19 +1,12 @@
-class bypass_test extends uvm_test;
+class bypass_test extends base_test;
     `uvm_component_utils(bypass_test)
 
-
-    environment env;
-    bypass_seq  bp;
+    bypass_seq bp;
 
     function new(string name = "bypass_test", uvm_component parent);
         super.new(name, parent);
     endfunction
 
-    function void build_phase(uvm_phase phase);
-        super.build_phase(phase);
-
-        env = environment::type_id::create("env", this);
-    endfunction
 
     task run_phase(uvm_phase phase);
         super.run_phase(phase);

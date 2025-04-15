@@ -1,4 +1,4 @@
-class id_code_test extends uvm_test;
+class id_code_test extends base_test;
     `uvm_component_utils(id_code_test)
 
     environment env;
@@ -9,11 +9,6 @@ class id_code_test extends uvm_test;
         super.new(name, parent);
     endfunction
 
-    function void build_phase(uvm_phase phase);
-        super.build_phase(phase);
-
-        env = environment::type_id::create("env", this);
-    endfunction
 
     task run_phase(uvm_phase phase);
         super.run_phase(phase);
