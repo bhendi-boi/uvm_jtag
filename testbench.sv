@@ -1,19 +1,6 @@
 import uvm_pkg::*;
-
-`include "uvm_macros.svh"
-`include "model.sv"
-`include "interface.sv"
-`include "seq_item.sv"
-`include "sequence.sv"
-`include "sequencer.sv"
-`include "driver.sv"
-`include "monitor.sv"
-`include "agent.sv"
-`include "scoreboard.sv"
-`include "environment.sv"
-`include "rand_test.sv"
-`include "reset_test.sv"
-
+`include "tests/test_pkg.sv"
+import test_pkg::*;
 
 module top ();
 
