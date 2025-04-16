@@ -25,15 +25,13 @@ class ref_model extends uvm_component;
         forever begin
             wait (trs.size() != 0);
             tr = trs.pop_front();
-            `uvm_info(
-                "Ref Model", $sformatf(
-                "Prev State = %s, TMS = %d", tap_state.name(), tr.tms_pad_i),
-                UVM_LOW)
-
-            compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
-
             `uvm_info("Ref Model", $sformatf(
-                      "Current State = %s", tap_state.name()), UVM_LOW)
+                      "Prev State = %s, TMS = %d, IR_REG = %d",
+                      tap_state.name(),
+                      tr.tms_pad_i,
+                      this.IR_REG
+                      ), UVM_LOW)
+
 
             this.is_sync_reset =
                 check_for_sync_reset(tr.trst_pad_i, tr.tms_pad_i);
@@ -45,6 +43,12 @@ class ref_model extends uvm_component;
             add_assert_statements();
             check_for_bypass(tr.tdi_pad_i);
             check_for_extest();
+
+            compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
+            `uvm_info(
+                "Ref Model", $sformatf(
+                "Current State = %s, IR_REG = %d", tap_state.name(), this.IR_REG
+                ), UVM_LOW)
         end
     endtask
 
@@ -137,6 +141,8 @@ class ref_model extends uvm_component;
         if (this.tap_state == SHIFT_IR) begin
             comp.tdo_pad_o = this.ir_reg[0];
             this.ir_reg = {tdi, this.ir_reg[3:1]};
+            `uvm_info("Ref Model", $sformatf("Changing ir to %d", this.ir_reg),
+                      UVM_NONE)
         end
 
         if (this.tap_state == UPDATE_IR) begin
