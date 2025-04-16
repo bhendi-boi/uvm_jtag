@@ -45,6 +45,9 @@ class ref_model extends uvm_component;
             check_for_extest();
             check_for_id_code();
 
+            if (this.id_code_test_complete)
+                `uvm_info("Ref Model", "ID CODE Test Complete", UVM_LOW)
+
             compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
             `uvm_info(
                 "Ref Model", $sformatf(
@@ -77,6 +80,7 @@ class ref_model extends uvm_component;
 
     int tms_count;  // used to check for sync reset.
     bit is_sync_reset;  // asserted when sync reset is detected
+    bit id_code_test_complete;
 
     // Supported Instructions
     `define EXTEST 4'b0000
@@ -94,7 +98,14 @@ class ref_model extends uvm_component;
 
     function void check_for_id_code();
         if (IR_REG == `IDCODE) begin
-            comp.tdo_pad_o = id_code_value;
+            comp.tdo_pad_o = this.id_code_value;
+        end
+        if (this.tap_state) begin
+            if (IR_REG == `IDCODE) begin
+                comp.tdo_pad_o = this.id_code_value[this.id_code_reg_index];
+                this.id_code_test_complete = this.id_code_reg_index == 31 ? 1 : 0;
+                this.id_code_reg_index = (this.id_code_reg_index + 1) % 32;
+            end
         end
     endfunction
 
