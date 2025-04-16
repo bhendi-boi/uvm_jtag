@@ -19,7 +19,8 @@ class ref_model extends uvm_component;
 
     task run_phase(uvm_phase phase);
         super.run_phase(phase);
-        tr = transaction::type_id::create("tr");
+        tr   = transaction::type_id::create("tr");
+        comp = transaction::type_id::create("comp");
 
         forever begin
             wait (trs.size() != 0);
