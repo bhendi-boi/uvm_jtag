@@ -39,6 +39,7 @@ class ref_model extends uvm_component;
             if (this.is_sync_reset)
                 `uvm_info("Ref Model", "Sync Reset Detected", UVM_HIGH)
 
+            add_assert_statements();
             check_for_bypass(tr.tdi_pad_i);
         end
     endtask
@@ -104,6 +105,37 @@ class ref_model extends uvm_component;
             if (tr.tms_pad_i) tms_count++;
             else tms_count = 0;
             return 0;
+        end
+    endfunction
+
+    function void add_assert_statements();
+        if (this.tap_state == CAPTURE_DR) begin
+            `uvm_info("Ref Model", "Capture DR asserted", UVM_HIGH)
+            comp.capture_dr_o = 1;
+        end
+        if (this.tap_state == SHIFT_DR) begin
+            `uvm_info("Ref Model", "Shift DR asserted", UVM_HIGH)
+            comp.shift_dr_o = 1;
+        end
+        if (this.tap_state == UPDATE_DR) begin
+            `uvm_info("Ref Model", "UPDATE DR asserted", UVM_HIGH)
+            comp.update_dr_o = 1;
+        end
+        if (this.tap_state == PAUSE_DR) begin
+            `uvm_info("Ref Model", "PAUSE DR asserted", UVM_HIGH)
+            comp.pause_dr_o = 1;
+        end
+        if (this.tap_state == CAPTURE_IR) begin
+            `uvm_info("Ref Model", "Capture IR asserted", UVM_HIGH)
+        end
+        if (this.tap_state == SHIFT_IR) begin
+            `uvm_info("Ref Model", "Shift IR asserted", UVM_HIGH)
+        end
+        if (this.tap_state == UPDATE_IR) begin
+            `uvm_info("Ref Model", "UPDATE IR asserted", UVM_HIGH)
+        end
+        if (this.tap_state == PAUSE_IR) begin
+            `uvm_info("Ref Model", "PAUSE IR asserted", UVM_HIGH)
         end
     endfunction
 
