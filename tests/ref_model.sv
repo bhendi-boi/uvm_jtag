@@ -2,7 +2,7 @@ class ref_model extends uvm_component;
     `uvm_component_utils(ref_model)
 
     uvm_analysis_imp #(transaction, ref_model) ref_port;
-    transaction tr, trs[$];
+    transaction tr, trs[$], comp;
 
     function new(string name = "ref_model", uvm_component parent = null);
         super.new(name, parent);
@@ -38,6 +38,8 @@ class ref_model extends uvm_component;
                 check_for_sync_reset(tr.trst_pad_i, tr.tms_pad_i);
             if (this.is_sync_reset)
                 `uvm_info("Ref Model", "Sync Reset Detected", UVM_HIGH)
+
+            check_for_bypass(tr.tdi_pad_i);
         end
     endtask
 
@@ -65,6 +67,31 @@ class ref_model extends uvm_component;
 
     int tms_count;  // used to check for sync reset.
     bit is_sync_reset;  // asserted when sync reset is detected
+
+    // Supported Instructions
+    `define EXTEST 4'b0000
+    `define SAMPLE_PRELOAD 4'b0001
+    `define IDCODE 4'b0010
+    `define DEBUG 4'b1000
+    `define MBIST 4'b1001
+    `define BYPASS 4'b1111
+
+    bit [3:0] IR_REG, ir_reg;
+
+    bit [31:0] id_code_value = 32'h149511c3;
+    int id_code_reg_index;  // variable used to move bit by bit
+    bit bypass_reg;  // lags tdi by a cycle
+
+    function void check_for_bypass(input bit tdi);
+        if (this.tap_state == SHIFT_DR) begin
+            if (this.IR_REG == `BYPASS) begin
+                comp.tdo_pad_o = bypass_reg;
+                `uvm_info("Ref Model", "Bypass Detected", UVM_HIGH)
+            end
+            // added this statement here so that bypass_reg lags a cycle
+            bypass_reg = tdi;
+        end
+    endfunction
 
     function bit check_for_sync_reset(input bit trst, input bit tms);
         if (trst) begin
