@@ -43,6 +43,7 @@ class ref_model extends uvm_component;
             reset_update();
             add_assert_statements();
             check_for_bypass(tr.tdi_pad_i);
+            check_for_extest();
         end
     endtask
 
@@ -115,6 +116,15 @@ class ref_model extends uvm_component;
             ir_reg = 0;
             IR_REG = `IDCODE; // Don't get fooled by line 374; Take a look at line 447 in design.
             bypass_reg = 0;
+        end
+    endfunction
+
+    function void check_for_extest();
+        if (this.tap_state == IDLE) begin
+            if (IR_REG == `EXTEST) begin
+                `uvm_info("Ref Model", "EXTEST Detected", UVM_HIGH)
+                comp.tdo_pad_o = tr.bs_chain_tdi_i;
+            end
         end
     endfunction
 
