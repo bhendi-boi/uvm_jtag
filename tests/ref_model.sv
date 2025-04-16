@@ -41,6 +41,7 @@ class ref_model extends uvm_component;
                 `uvm_info("Ref Model", "Sync Reset Detected", UVM_HIGH)
 
             reset_update();
+            updates_to_ir_reg(tr.tdi_pad_i);
             add_assert_statements();
             check_for_bypass(tr.tdi_pad_i);
             check_for_extest();
@@ -125,6 +126,21 @@ class ref_model extends uvm_component;
                 `uvm_info("Ref Model", "EXTEST Detected", UVM_HIGH)
                 comp.tdo_pad_o = tr.bs_chain_tdi_i;
             end
+        end
+    endfunction
+
+    function void updates_to_ir_reg(input bit tdi);
+        if (this.tap_state == CAPTURE_IR) begin
+            this.ir_reg = 4'b0101;
+        end
+
+        if (this.tap_state == SHIFT_IR) begin
+            comp.tdo_pad_o = this.ir_reg[0];
+            this.ir_reg = {tdi, this.ir_reg[3:1]};
+        end
+
+        if (this.tap_state == UPDATE_IR) begin
+            this.IR_REG = this.ir_reg;
         end
     endfunction
 
