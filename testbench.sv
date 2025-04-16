@@ -1,6 +1,7 @@
 import uvm_pkg::*;
 `include "tests/test_pkg.sv"
 import test_pkg::*;
+`include "interface.sv"
 
 module top ();
 
