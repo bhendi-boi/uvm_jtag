@@ -8,6 +8,7 @@ package test_pkg;
 
     `include "../model.sv"
     `include "scoreboard.sv"
+    `include "ref_model.sv"
     `include "environment.sv"
 
     `include "base_test.sv"

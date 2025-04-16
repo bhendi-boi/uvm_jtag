@@ -2,6 +2,7 @@ class scoreboard extends uvm_scoreboard;
     `uvm_component_utils(scoreboard)
 
     uvm_analysis_imp #(transaction, scoreboard) scoreboard_port;
+    uvm_analysis_port #(transaction) scoreboard_ref_port;
 
     transaction tr, comp, trs[$];
     int no_of_tr;
@@ -16,7 +17,8 @@ class scoreboard extends uvm_scoreboard;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         scoreboard_port = new("scoreboard_port", this);
-        this.no_of_tr   = 0;
+        scoreboard_ref_port = new("scoreboard_ref_port", this);
+        this.no_of_tr = 0;
     endfunction
 
     task run_phase(uvm_phase phase);
@@ -51,6 +53,7 @@ class scoreboard extends uvm_scoreboard;
 
     function void write(transaction tr);
         trs.push_back(tr);
+        scoreboard_ref_port.write(tr);
     endfunction
 
 
