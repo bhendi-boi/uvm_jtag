@@ -40,6 +40,7 @@ class ref_model extends uvm_component;
             if (this.is_sync_reset)
                 `uvm_info("Ref Model", "Sync Reset Detected", UVM_HIGH)
 
+            reset_update();
             add_assert_statements();
             check_for_bypass(tr.tdi_pad_i);
         end
@@ -106,6 +107,14 @@ class ref_model extends uvm_component;
             if (tr.tms_pad_i) tms_count++;
             else tms_count = 0;
             return 0;
+        end
+    endfunction
+
+    function void reset_update();
+        if (this.tap_state == TEST_LOGIC_RESET) begin
+            ir_reg = 0;
+            IR_REG = `IDCODE; // Don't get fooled by line 374; Take a look at line 447 in design.
+            bypass_reg = 0;
         end
     endfunction
 
