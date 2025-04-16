@@ -1,7 +1,6 @@
 class id_code_test extends base_test;
     `uvm_component_utils(id_code_test)
 
-    environment env;
     id_code_seq id0;
 
 
