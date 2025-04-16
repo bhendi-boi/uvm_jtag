@@ -33,6 +33,11 @@ class ref_model extends uvm_component;
 
             `uvm_info("Ref Model", $sformatf(
                       "Current State = %s", tap_state.name()), UVM_LOW)
+
+            this.is_sync_reset =
+                check_for_sync_reset(tr.trst_pad_i, tr.tms_pad_i);
+            if (this.is_sync_reset)
+                `uvm_info("Ref Model", "Sync Reset Detected", UVM_HIGH)
         end
     endtask
 
@@ -57,6 +62,23 @@ class ref_model extends uvm_component;
     } TAP_STATE;
 
     TAP_STATE tap_state;
+
+    int tms_count;  // used to check for sync reset.
+    bit is_sync_reset;  // asserted when sync reset is detected
+
+    function bit check_for_sync_reset(input bit trst, input bit tms);
+        if (trst) begin
+            this.tms_count = 0;
+        end else begin
+            if (this.tms_count == 4) begin
+                tms_count = 0;
+                return 1;
+            end
+            if (tr.tms_pad_i) tms_count++;
+            else tms_count = 0;
+            return 0;
+        end
+    endfunction
 
     function void compute_current_state(input bit trst, input bit tms);
         if (trst) begin
