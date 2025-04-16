@@ -43,6 +43,7 @@ class ref_model extends uvm_component;
             add_assert_statements();
             check_for_bypass(tr.tdi_pad_i);
             check_for_extest();
+            check_for_id_code();
 
             compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
             `uvm_info(
@@ -90,6 +91,12 @@ class ref_model extends uvm_component;
     bit [31:0] id_code_value = 32'h149511c3;
     int id_code_reg_index;  // variable used to move bit by bit
     bit bypass_reg;  // lags tdi by a cycle
+
+    function void check_for_id_code();
+        if (IR_REG == `IDCODE) begin
+            comp.tdo_pad_o = id_code_value;
+        end
+    endfunction
 
     function void check_for_bypass(input bit tdi);
         if (this.tap_state == SHIFT_DR) begin
