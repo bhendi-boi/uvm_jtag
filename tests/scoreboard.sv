@@ -1,10 +1,13 @@
+`uvm_analysis_imp_decl(_mon)
+`uvm_analysis_imp_decl(_ref)
 class scoreboard extends uvm_scoreboard;
     `uvm_component_utils(scoreboard)
 
-    uvm_analysis_imp #(transaction, scoreboard) scoreboard_port;
+    uvm_analysis_imp_mon #(transaction, scoreboard) scoreboard_port;
+    uvm_analysis_imp_ref #(transaction, scoreboard) scoreboard_ref_imp;
     uvm_analysis_port #(transaction) scoreboard_ref_port;
 
-    transaction tr, comp, trs[$];
+    transaction tr, comp, trs[$], comps[$];
     int no_of_tr;
     bit is_sync_reset;
     bit id_code_test_complete;
@@ -18,6 +21,7 @@ class scoreboard extends uvm_scoreboard;
         super.build_phase(phase);
         scoreboard_port = new("scoreboard_port", this);
         scoreboard_ref_port = new("scoreboard_ref_port", this);
+        scoreboard_ref_imp = new("scoreboard_ref_imp", this);
         this.no_of_tr = 0;
     endfunction
 
@@ -28,34 +32,28 @@ class scoreboard extends uvm_scoreboard;
             wait (trs.size() != 0);
             tr = trs.pop_front();
 
-            model_tap(tr, comp, is_sync_reset, id_code_test_complete);
+            wait (comps.size() != 0);
+            comp = comps.pop_front();
+            `uvm_info("Scoreboard Ref Model", comp.convert2string(), UVM_NONE)
             are_same = tr.compare(comp);
-            `uvm_info("Scoreboard", comp.convert2string(), UVM_NONE)
 
-            if (is_sync_reset) begin
-                if (!sync_reset_check(
-                        tr.shift_dr_o,
-                        tr.pause_dr_o,
-                        tr.update_dr_o,
-                        tr.capture_dr_o
-                    ))
-                    `uvm_info("Scoreboard", "Sync Reset Check Passed", UVM_NONE)
-                else `uvm_error("Scoreboard", "Sync Reset Check Failed")
-            end
+            model_tap(tr, comp, is_sync_reset, id_code_test_complete);
+            `uvm_info("Scoreboard Model_SV", comp.convert2string(), UVM_NONE)
 
-            if (id_code_test_complete)
-                `uvm_info("Scoreboard", "ID CODE Test Complete", UVM_NONE)
 
             this.no_of_tr++;
             print_info();
         end
     endtask
 
-    function void write(transaction tr);
+    function void write_mon(transaction tr);
         trs.push_back(tr);
         scoreboard_ref_port.write(tr);
     endfunction
 
+    function void write_ref(transaction tr);
+        comps.push_back(tr);
+    endfunction
 
     function void print_info();
         if (are_same)

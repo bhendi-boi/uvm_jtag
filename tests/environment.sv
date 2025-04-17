@@ -20,7 +20,8 @@ class environment extends uvm_env;
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
         agnt.mon.monitor_port.connect(scb.scoreboard_port);
-        scb.scoreboard_ref_port.connect(model.ref_port);
+        scb.scoreboard_ref_port.connect(model.ref_imp_port);
+        model.ref_port.connect(scb.scoreboard_ref_imp);
     endfunction
 
 endclass

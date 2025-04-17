@@ -1,7 +1,8 @@
 class ref_model extends uvm_component;
     `uvm_component_utils(ref_model)
 
-    uvm_analysis_imp #(transaction, ref_model) ref_port;
+    uvm_analysis_imp #(transaction, ref_model) ref_imp_port;
+    uvm_analysis_port #(transaction) ref_port;
     transaction tr, trs[$], comp;
 
     function new(string name = "ref_model", uvm_component parent = null);
@@ -11,6 +12,7 @@ class ref_model extends uvm_component;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         ref_port = new("ref_port", this);
+        ref_imp_port = new("ref_imp_port", this);
     endfunction
 
     function void write(transaction t);
@@ -38,6 +40,9 @@ class ref_model extends uvm_component;
             if (this.is_sync_reset)
                 `uvm_info("Ref Model", "Sync Reset Detected", UVM_HIGH)
 
+            update_input_vars_in_comp();
+            reset_output_vars_in_comp();
+
             reset_update();
             updates_to_ir_reg(tr.tdi_pad_i);
             add_assert_statements();
@@ -47,7 +52,7 @@ class ref_model extends uvm_component;
 
             if (this.id_code_test_complete)
                 `uvm_info("Ref Model", "ID CODE Test Complete", UVM_LOW)
-
+            ref_port.write(comp);
             compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
             `uvm_info(
                 "Ref Model", $sformatf(
@@ -98,11 +103,12 @@ class ref_model extends uvm_component;
 
     function void check_for_id_code();
         if (IR_REG == `IDCODE) begin
-            comp.tdo_pad_o = this.id_code_value;
+            `uvm_info("Ref Model", "Doing", UVM_LOW)
+            this.comp.tdo_pad_o = 1'b1;
         end
         if (this.tap_state) begin
             if (IR_REG == `IDCODE) begin
-                comp.tdo_pad_o = this.id_code_value[this.id_code_reg_index];
+                this.comp.tdo_pad_o = this.id_code_value[this.id_code_reg_index];
                 this.id_code_test_complete = this.id_code_reg_index == 31 ? 1 : 0;
                 this.id_code_reg_index = (this.id_code_reg_index + 1) % 32;
             end
@@ -253,6 +259,25 @@ class ref_model extends uvm_component;
                 else this.tap_state = IDLE;
             end
         end
+    endfunction
+
+    function void update_input_vars_in_comp();
+        this.comp.tms_pad_i = this.tr.tms_pad_i;
+        this.comp.trst_pad_i = this.tr.trst_pad_i;
+        this.comp.tdi_pad_i = this.tr.tdi_pad_i;
+        this.comp.bs_chain_tdi_i = this.tr.bs_chain_tdi_i;
+        this.comp.debug_tdi_i = this.tr.debug_tdi_i;
+        this.comp.mbist_tdi_i = this.tr.mbist_tdi_i;
+    endfunction
+
+    function void reset_output_vars_in_comp();
+        this.comp.shift_dr_o = 0;
+        this.comp.capture_dr_o = 0;
+        this.comp.update_dr_o = 0;
+        this.comp.pause_dr_o = 0;
+
+        this.comp.tdo_o = tr.tdi_pad_i;
+        this.comp.tdo_pad_o = 0;
     endfunction
 
 endclass
