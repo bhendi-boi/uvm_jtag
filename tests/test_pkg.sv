@@ -18,5 +18,6 @@ package test_pkg;
     `include "bypass_test.sv"
     `include "sample_preload_test.sv"
     `include "rand_test.sv"
+    `include "test_all_test.sv"
 
 endpackage
