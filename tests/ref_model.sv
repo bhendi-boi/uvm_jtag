@@ -34,7 +34,6 @@ class ref_model extends uvm_component;
                       this.IR_REG
                       ), UVM_LOW)
 
-
             this.is_sync_reset =
                 check_for_sync_reset(tr.trst_pad_i, tr.tms_pad_i);
             if (this.is_sync_reset)
@@ -81,7 +80,7 @@ class ref_model extends uvm_component;
         UPDATE_IR = 15
     } TAP_STATE;
 
-    TAP_STATE tap_state;
+    TAP_STATE tap_state, prev_tap_state;
 
     int tms_count;  // used to check for sync reset.
     bit is_sync_reset;  // asserted when sync reset is detected
@@ -103,10 +102,9 @@ class ref_model extends uvm_component;
 
     function void check_for_id_code();
         if (IR_REG == `IDCODE) begin
-            `uvm_info("Ref Model", "Doing", UVM_LOW)
             this.comp.tdo_pad_o = 1'b1;
         end
-        if (this.tap_state) begin
+        if (this.tap_state == SHIFT_DR) begin
             if (IR_REG == `IDCODE) begin
                 this.comp.tdo_pad_o = this.id_code_value[this.id_code_reg_index];
                 this.id_code_test_complete = this.id_code_reg_index == 31 ? 1 : 0;
@@ -159,7 +157,7 @@ class ref_model extends uvm_component;
 
     function void updates_to_ir_reg(input bit tdi);
         if (this.tap_state == CAPTURE_IR) begin
-            this.ir_reg = 4'b0101;
+            this.ir_reg = 4'b0101;  // this has to somehow lag
         end
 
         if (this.tap_state == SHIFT_IR) begin
