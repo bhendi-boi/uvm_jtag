@@ -32,29 +32,26 @@ class test_all_test extends base_test;
         dbg.set_no_of_tr(50);
         sp0.set_no_of_tr(50);
 
-        fork
-            begin
-                et.start(env.agnt.seqr);
-            end
-            begin
-                bp.start(env.agnt.seqr);
-            end
-            begin
-                id0.start(env.agnt.seqr);
-            end
-            begin
-                ras.start(env.agnt.seqr);
-            end
-            begin
-                rs.start(env.agnt.seqr);
-            end
-            begin
-                dbg.start(env.agnt.seqr);
-            end
-            begin
-                sp0.start(env.agnt.seqr);
-            end
-        join
+
+        ras.start(env.agnt.seqr);
+        rs.start(env.agnt.seqr);
+
+        et.start(env.agnt.seqr);
+        `uvm_info("Test all Test", "Extest Sequence is done", UVM_NONE)
+
+        bp.start(env.agnt.seqr);
+        `uvm_info("Test all Test", "Bypass Sequence is done", UVM_NONE)
+
+        id0.start(env.agnt.seqr);
+        `uvm_info("Test all Test", "Idcode Sequence is done", UVM_NONE)
+
+
+        dbg.start(env.agnt.seqr);
+        `uvm_info("Test all Test", "Debug Sequence is done", UVM_NONE)
+
+        sp0.start(env.agnt.seqr);
+        `uvm_info("Test all Test", "Sample Preload Sequence is done", UVM_NONE)
+
 
         #20;
         phase.drop_objection(this);
