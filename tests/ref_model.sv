@@ -110,7 +110,7 @@ class ref_model extends uvm_component;
         if (IR_REG == `IDCODE) begin
             this.comp.tdo_pad_o = 1'b1;
         end
-        if (this.tap_state == SHIFT_DR) begin
+        if (this.prev_tap_state == SHIFT_DR) begin
             if (IR_REG == `IDCODE) begin
                 this.comp.tdo_pad_o = this.id_code_value[this.id_code_reg_index];
                 this.id_code_test_complete = this.id_code_reg_index == 31 ? 1 : 0;
