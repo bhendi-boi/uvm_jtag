@@ -307,3 +307,63 @@ class bypass_seq extends uvm_sequence;
     endtask
 
 endclass
+
+class debug_seq extends uvm_sequence;
+    `uvm_object_utils(debug_seq)
+
+    rand transaction tr;
+    int no_of_tr;
+
+    // 5 1's for bringing TAP to reset
+    // Next 5 for bringing TAP to SHIFT_IR
+    // Next 2 to keep the TAP in SHIFT_IR
+    // Next 3 to bring TAP to RUN_TEST
+    bit setup_with_tms[] = {1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0};
+    rand bit setup_with_tdi[$];
+
+    constraint setup_ir_to_1000 {
+        setup_with_tdi.size() == setup_with_tms.size();
+        setup_with_tdi[10] == 0;
+        setup_with_tdi[11] == 0;
+        setup_with_tdi[12] == 1;
+    }
+
+    function new(string name = "debug_seq");
+        super.new(name);
+        if (!randomize(setup_with_tdi))
+            `uvm_fatal("Bypass Sequence", "TDI randomization failed")
+        `uvm_info("TDI", $sformatf("Randomized TDI: %p", setup_with_tdi),
+                  UVM_HIGH)
+    endfunction
+
+    function void set_no_of_tr(int no_of_tr);
+        this.no_of_tr = no_of_tr;
+    endfunction
+
+    task body();
+        tr = transaction::type_id::create("tr");
+
+        foreach (setup_with_tms[i]) begin
+            start_item(tr);
+            if (!tr.randomize() with {
+                    tr.trst_pad_i == 0;
+                    tr.tms_pad_i == setup_with_tms[i];
+                    tr.tdi_pad_i == setup_with_tdi[i];
+                })
+                `uvm_fatal("Debug Sequence", "Randomisation failed")
+            finish_item(tr);
+
+        end
+
+        repeat (no_of_tr) begin
+            start_item(tr);
+            if (!tr.randomize() with {
+                    tr.trst_pad_i == 0;
+                    tr.tms_pad_i == 0;  // Keeping TAP in RUN_TEST/IDLE state
+                })
+                `uvm_fatal("Debug Sequence", "Randomisation failed")
+            finish_item(tr);
+        end
+    endtask
+
+endclass

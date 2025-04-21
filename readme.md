@@ -67,3 +67,10 @@ Instruction register length = 4
 - `bypass_seq` load `1111` into the instruction register.
 - Then it brings TAP to SHIFT_DR state.
 - `tdo_pad_o` lags `tdi_pad` by one cycle.
+
+### Debug
+
+- Run `debug_test` to test the debug functionality of JTAG.
+- `debug_seq` load `1000` into the instruction register.
+- Then it brings TAP to IDLE state.
+- `debug_tdi_i` is connected to `tdo_pad_o`
