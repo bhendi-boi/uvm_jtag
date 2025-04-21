@@ -50,7 +50,7 @@ class ref_model extends uvm_component;
             reset_output_vars_in_comp();
 
             reset_update();
-            add_assert_statements();
+            add_assert_statements_and_update_outputs();
             check_for_bypass(tr.tdi_pad_i);
             check_for_extest();
             check_for_id_code();
@@ -178,35 +178,37 @@ class ref_model extends uvm_component;
         end
     endfunction
 
-    function void add_assert_statements();
-        if (this.tap_state == CAPTURE_DR) begin
+    function void add_assert_statements_and_update_outputs();
+
+        // using prev_state as ref model is not lagged by a cycle
+        if (this.tap_state == CAPTURE_DR)
             `uvm_info("Ref Model", "Capture DR asserted", UVM_HIGH)
-            comp.capture_dr_o = 1;
-        end
-        if (this.tap_state == SHIFT_DR) begin
+        if (this.prev_tap_state == CAPTURE_DR) comp.capture_dr_o = 1;
+
+        if (this.tap_state == SHIFT_DR)
             `uvm_info("Ref Model", "Shift DR asserted", UVM_HIGH)
-            comp.shift_dr_o = 1;
-        end
-        if (this.tap_state == UPDATE_DR) begin
+        if (this.prev_tap_state == SHIFT_DR) comp.shift_dr_o = 1;
+
+        if (this.tap_state == UPDATE_DR)
             `uvm_info("Ref Model", "UPDATE DR asserted", UVM_HIGH)
-            comp.update_dr_o = 1;
-        end
-        if (this.tap_state == PAUSE_DR) begin
+        if (this.prev_tap_state == UPDATE_DR) comp.update_dr_o = 1;
+
+        if (this.tap_state == PAUSE_DR)
             `uvm_info("Ref Model", "PAUSE DR asserted", UVM_HIGH)
-            comp.pause_dr_o = 1;
-        end
-        if (this.tap_state == CAPTURE_IR) begin
+        if (this.prev_tap_state == PAUSE_DR) comp.pause_dr_o = 1;
+
+        if (this.tap_state == CAPTURE_IR)
             `uvm_info("Ref Model", "Capture IR asserted", UVM_HIGH)
-        end
-        if (this.tap_state == SHIFT_IR) begin
+
+        if (this.tap_state == SHIFT_IR)
             `uvm_info("Ref Model", "Shift IR asserted", UVM_HIGH)
-        end
-        if (this.tap_state == UPDATE_IR) begin
+
+        if (this.tap_state == UPDATE_IR)
             `uvm_info("Ref Model", "UPDATE IR asserted", UVM_HIGH)
-        end
-        if (this.tap_state == PAUSE_IR) begin
+
+        if (this.tap_state == PAUSE_IR)
             `uvm_info("Ref Model", "PAUSE IR asserted", UVM_HIGH)
-        end
+
     endfunction
 
     function void compute_current_state(input bit trst, input bit tms);
