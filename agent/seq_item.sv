@@ -114,6 +114,15 @@ class transaction extends uvm_sequence_item;
                       UVM_DEBUG)
             return 0;
         end
+        if (this.sample_preload_select_o != comp.sample_preload_select_o) begin
+            `uvm_info(
+                "Transaction",
+                $sformatf(
+                    "tr.sample_preload_select_o = %d, comp.sample_preload_select_o = %d",
+                    this.sample_preload_select_o, comp.sample_preload_select_o),
+                UVM_DEBUG)
+            return 0;
+        end
 
         return 1;
 
