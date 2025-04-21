@@ -4,6 +4,8 @@ class test_all_test extends base_test;
     bypass_seq bp;
     extest_seq et;
     id_code_seq id0;
+    debug_seq dbg;
+    sample_prelaod_seq sp0;
     async_reset_seq ras;
     sync_reset_seq rs;
 
@@ -19,11 +21,16 @@ class test_all_test extends base_test;
         bp  = bypass_seq::type_id::create("bypass_seq");
         et  = extest_seq::type_id::create("extest_seq");
         id0 = id_code_seq::type_id::create("id_code_seq");
+        dbg = debug_seq::type_id::create("debug_seq");
+        sp0 = sample_prelaod_seq::type_id::create("sample_prelaod_seq");
         ras = async_reset_seq::type_id::create("ras");
         rs  = sync_reset_seq::type_id::create("rs");
 
-        bp.set_no_of_tr(10);
-        et.set_no_of_tr(10);
+
+        bp.set_no_of_tr(50);
+        et.set_no_of_tr(50);
+        dbg.set_no_of_tr(50);
+        sp0.set_no_of_tr(50);
 
         fork
             begin
@@ -40,6 +47,12 @@ class test_all_test extends base_test;
             end
             begin
                 rs.start(env.agnt.seqr);
+            end
+            begin
+                dbg.start(env.agnt.seqr);
+            end
+            begin
+                sp0.start(env.agnt.seqr);
             end
         join
 
