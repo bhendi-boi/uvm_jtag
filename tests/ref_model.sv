@@ -35,6 +35,7 @@ class ref_model extends uvm_component;
                       ), UVM_LOW)
 
             this.prev_tap_state = this.tap_state;
+            this.prev_is_sync_reset = this.is_sync_reset;
             compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
             `uvm_info(
                 "Ref Model", $sformatf(
@@ -90,6 +91,7 @@ class ref_model extends uvm_component;
 
     int tms_count;  // used to check for sync reset.
     bit is_sync_reset;  // asserted when sync reset is detected
+    bit prev_is_sync_reset;
     bit id_code_test_complete;
 
     // Supported Instructions
@@ -108,6 +110,7 @@ class ref_model extends uvm_component;
 
     function void check_for_id_code();
         if (IR_REG == `IDCODE) begin
+            `uvm_info("Ref Model", "IDCODE Detected", UVM_HIGH)
             this.comp.tdo_pad_o = 1'b1;
         end
         if (this.prev_tap_state == SHIFT_DR) begin
@@ -150,7 +153,7 @@ class ref_model extends uvm_component;
             IR_REG = `IDCODE; // Don't get fooled by line 374; Take a look at line 447 in design.
             bypass_reg = 0;
         end
-        if (this.is_sync_reset) begin
+        if (this.prev_is_sync_reset) begin
             ir_reg = 0;
             IR_REG = `IDCODE;
             bypass_reg = 0;
