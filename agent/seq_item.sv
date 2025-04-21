@@ -96,8 +96,8 @@ class transaction extends uvm_sequence_item;
                       $sformatf("tr.tdo_pad_o = %d, comp.tdo_pad_o = %d",
                                 this.tdo_o, comp.tdo_o), UVM_DEBUG)
             return 0;
-
         end
+
 
         if (this.debug_select_o != comp.debug_select_o) begin
             `uvm_info("Transaction",
@@ -105,7 +105,14 @@ class transaction extends uvm_sequence_item;
                           "tr.debug_select_o = %d, comp.debug_select_o = %d",
                           this.debug_select_o, comp.debug_select_o), UVM_DEBUG)
             return 0;
-
+        end
+        if (this.extest_select_o != comp.extest_select_o) begin
+            `uvm_info("Transaction",
+                      $sformatf(
+                          "tr.extest_select_o = %d, comp.extest_select_o = %d",
+                          this.extest_select_o, comp.extest_select_o),
+                      UVM_DEBUG)
+            return 0;
         end
 
         return 1;

@@ -158,6 +158,9 @@ class ref_model extends uvm_component;
                 comp.tdo_pad_o = tr.bs_chain_tdi_i;
             end
         end
+        if (IR_REG == `EXTEST) begin
+            comp.extest_select_o = tr.extest_select_o;
+        end
     endfunction
 
     function void check_for_debug();
