@@ -58,8 +58,6 @@ class ref_model extends uvm_component;
             check_for_sample_preload();
             updates_to_ir_reg(tr.tdi_pad_i);
 
-            if (this.is_sync_reset) this.comp.tdo_pad_o = 1'b0;
-
             if (this.id_code_test_complete)
                 `uvm_info("Ref Model", "ID CODE Test Complete", UVM_LOW)
             ref_port.write(comp);
@@ -122,7 +120,7 @@ class ref_model extends uvm_component;
     endfunction
 
     function void check_for_bypass(input bit tdi);
-        if (this.tap_state == SHIFT_DR) begin
+        if (this.prev_tap_state == SHIFT_DR) begin
             if (this.IR_REG == `BYPASS) begin
                 comp.tdo_pad_o = bypass_reg;
                 `uvm_info("Ref Model", "Bypass Detected", UVM_HIGH)
