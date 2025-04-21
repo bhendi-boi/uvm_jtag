@@ -6,7 +6,6 @@ package test_pkg;
     `include "uvm_macros.svh"
     import agent_pkg::*;
 
-    `include "../model.sv"
     `include "scoreboard.sv"
     `include "ref_model.sv"
     `include "environment.sv"

@@ -37,10 +37,6 @@ class scoreboard extends uvm_scoreboard;
             `uvm_info("Scoreboard Ref Model", comp.convert2string(), UVM_NONE)
             are_same = tr.compare(comp);
 
-            model_tap(tr, comp, is_sync_reset, id_code_test_complete);
-            `uvm_info("Scoreboard Model_SV", comp.convert2string(), UVM_NONE)
-
-
             this.no_of_tr++;
             print_info();
         end
