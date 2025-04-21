@@ -58,6 +58,8 @@ class ref_model extends uvm_component;
             check_for_sample_preload();
             updates_to_ir_reg(tr.tdi_pad_i);
 
+            if (this.is_sync_reset) this.comp.tdo_pad_o = 1'b0;
+
             if (this.id_code_test_complete)
                 `uvm_info("Ref Model", "ID CODE Test Complete", UVM_LOW)
             ref_port.write(comp);
@@ -145,22 +147,23 @@ class ref_model extends uvm_component;
     endfunction
 
     function void reset_update();
-        if (this.tap_state == TEST_LOGIC_RESET) begin
+        if (this.tr.trst_pad_i) begin
             ir_reg = 0;
             IR_REG = `IDCODE; // Don't get fooled by line 374; Take a look at line 447 in design.
+            bypass_reg = 0;
+        end
+        if (this.is_sync_reset) begin
+            ir_reg = 0;
+            IR_REG = `IDCODE;
             bypass_reg = 0;
         end
     endfunction
 
     function void check_for_extest();
-        if (this.tap_state == IDLE) begin
-            if (IR_REG == `EXTEST) begin
-                `uvm_info("Ref Model", "EXTEST Detected", UVM_HIGH)
-                comp.tdo_pad_o = tr.bs_chain_tdi_i;
-            end
-        end
         if (IR_REG == `EXTEST) begin
-            comp.extest_select_o = tr.extest_select_o;
+            `uvm_info("Ref Model", "EXTEST Detected", UVM_HIGH)
+            this.comp.extest_select_o = 1'b1;
+            comp.tdo_pad_o = tr.bs_chain_tdi_i;
         end
     endfunction
 
