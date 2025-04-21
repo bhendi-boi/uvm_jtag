@@ -1,5 +1,14 @@
 # JTAG verification with UVM
 
+## Run Commands
+
+### Xcelium
+
+```bash
+xrun -Q -unbuffered '-timescale' '1ns/1ns' '-sysv' '-access' '+rw' '+UVM_VERBOSITY=UVM_HIGH' '+UVM_TESTNAME=test_all_test' '-svseed' '2' -uvmnocdnsextra -uvmhome $UVM_HOME $UVM_HOME/src/uvm_macros.svh design.sv testbench.sv -incdir agent -incdir tests
+
+```
+
 ## SPEC
 
 - signals with suffix `i` are inputs and signals with suffix `o` are outputs.
