@@ -165,6 +165,7 @@ class ref_model extends uvm_component;
             if (IR_REG == `DEBUG) begin
                 `uvm_info("Ref Model", "DEBUG Detected", UVM_HIGH)
                 comp.tdo_pad_o = tr.debug_tdi_i;
+                comp.debug_select_o = 1'b1;
             end
         end
     endfunction

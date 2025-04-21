@@ -99,6 +99,15 @@ class transaction extends uvm_sequence_item;
 
         end
 
+        if (this.debug_select_o != comp.debug_select_o) begin
+            `uvm_info("Transaction",
+                      $sformatf(
+                          "tr.debug_select_o = %d, comp.debug_select_o = %d",
+                          this.debug_select_o, comp.debug_select_o), UVM_DEBUG)
+            return 0;
+
+        end
+
         return 1;
 
     endfunction
