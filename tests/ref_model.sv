@@ -55,6 +55,7 @@ class ref_model extends uvm_component;
             check_for_extest();
             check_for_id_code();
             check_for_debug();
+            check_for_sample_preload();
             updates_to_ir_reg(tr.tdi_pad_i);
 
             if (this.id_code_test_complete)
@@ -169,6 +170,16 @@ class ref_model extends uvm_component;
                 `uvm_info("Ref Model", "DEBUG Detected", UVM_HIGH)
                 comp.tdo_pad_o = tr.debug_tdi_i;
                 comp.debug_select_o = 1'b1;
+            end
+        end
+    endfunction
+
+    function void check_for_sample_preload();
+        if (this.tap_state == IDLE) begin
+            if (IR_REG == `SAMPLE_PRELOAD) begin
+                `uvm_info("Ref Model", "SAMPLE_PRELOAD Detected", UVM_HIGH)
+                comp.tdo_pad_o = tr.bs_chain_tdi_i;
+                comp.sample_preload_select_o = 1'b1;
             end
         end
     endfunction

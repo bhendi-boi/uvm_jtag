@@ -13,6 +13,7 @@ class sample_preload_test extends base_test;
         phase.raise_objection(this);
 
         sp0 = sample_prelaod_seq::type_id::create("sample_prelaod_seq");
+        sp0.set_no_of_tr(10);
 
         sp0.start(env.agnt.seqr);
 
