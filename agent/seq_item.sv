@@ -63,38 +63,37 @@ class transaction extends uvm_sequence_item;
         if (this.shift_dr_o != comp.shift_dr_o) begin
             `uvm_info("Transaction",
                       $sformatf("tr.shift_dr_o = %d, comp.shift_dr_o = %d",
-                                this.shift_dr_o, comp.shift_dr_o), UVM_DEBUG)
+                                this.shift_dr_o, comp.shift_dr_o), UVM_FULL)
             return 0;
         end
         if (this.capture_dr_o != comp.capture_dr_o) begin
             `uvm_info("Transaction",
                       $sformatf("tr.capture_dr_o = %d, comp.capture_dr_o = %d",
-                                this.capture_dr_o, comp.capture_dr_o),
-                      UVM_DEBUG)
+                                this.capture_dr_o, comp.capture_dr_o), UVM_FULL)
             return 0;
         end
         if (this.update_dr_o != comp.update_dr_o) begin
             `uvm_info("Transaction",
                       $sformatf("tr.update_dr_o = %d, comp.update_dr_o = %d",
-                                this.update_dr_o, comp.update_dr_o), UVM_DEBUG)
+                                this.update_dr_o, comp.update_dr_o), UVM_FULL)
             return 0;
         end
         if (this.tdo_o != comp.tdo_o) begin
             `uvm_info("Transaction",
                       $sformatf("tr.tdo_o = %d, comp.tdo_o = %d", this.tdo_o,
-                                comp.tdo_o), UVM_DEBUG)
+                                comp.tdo_o), UVM_FULL)
             return 0;
         end
         if (this.tdo_padoe_o != comp.tdo_padoe_o) begin
             `uvm_info("Transaction",
                       $sformatf("tr.tdo_padoe_o = %d, comp.tdo_padoe_o = %d",
-                                this.tdo_padoe_o, comp.tdo_padoe_o), UVM_DEBUG)
+                                this.tdo_padoe_o, comp.tdo_padoe_o), UVM_FULL)
             return 0;
         end
         if (this.tdo_pad_o != comp.tdo_pad_o) begin
             `uvm_info("Transaction",
                       $sformatf("tr.tdo_pad_o = %d, comp.tdo_pad_o = %d",
-                                this.tdo_o, comp.tdo_o), UVM_DEBUG)
+                                this.tdo_o, comp.tdo_o), UVM_FULL)
             return 0;
         end
 
@@ -103,15 +102,14 @@ class transaction extends uvm_sequence_item;
             `uvm_info("Transaction",
                       $sformatf(
                           "tr.debug_select_o = %d, comp.debug_select_o = %d",
-                          this.debug_select_o, comp.debug_select_o), UVM_DEBUG)
+                          this.debug_select_o, comp.debug_select_o), UVM_FULL)
             return 0;
         end
         if (this.extest_select_o != comp.extest_select_o) begin
             `uvm_info("Transaction",
                       $sformatf(
                           "tr.extest_select_o = %d, comp.extest_select_o = %d",
-                          this.extest_select_o, comp.extest_select_o),
-                      UVM_DEBUG)
+                          this.extest_select_o, comp.extest_select_o), UVM_FULL)
             return 0;
         end
         if (this.sample_preload_select_o != comp.sample_preload_select_o) begin
@@ -120,7 +118,7 @@ class transaction extends uvm_sequence_item;
                 $sformatf(
                     "tr.sample_preload_select_o = %d, comp.sample_preload_select_o = %d",
                     this.sample_preload_select_o, comp.sample_preload_select_o),
-                UVM_DEBUG)
+                UVM_FULL)
             return 0;
         end
 
