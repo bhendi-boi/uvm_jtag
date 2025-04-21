@@ -93,7 +93,7 @@ class transaction extends uvm_sequence_item;
         if (this.tdo_pad_o != comp.tdo_pad_o) begin
             `uvm_info("Transaction",
                       $sformatf("tr.tdo_pad_o = %d, comp.tdo_pad_o = %d",
-                                this.tdo_o, comp.tdo_o), UVM_FULL)
+                                this.tdo_pad_o, comp.tdo_pad_o), UVM_FULL)
             return 0;
         end
 
