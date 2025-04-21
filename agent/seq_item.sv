@@ -60,12 +60,44 @@ class transaction extends uvm_sequence_item;
         if (this.mbist_tdi_i != comp.mbist_tdi_i) return 0;
 
         // only checking for fields which are used
-        if (this.shift_dr_o != comp.shift_dr_o) return 0;
-        if (this.capture_dr_o != comp.capture_dr_o) return 0;
-        if (this.update_dr_o != comp.update_dr_o) return 0;
-        if (this.tdo_o != comp.tdo_o) return 0;
-        if (this.tdo_padoe_o != comp.tdo_padoe_o) return 0;
-        if (this.tdo_pad_o != comp.tdo_pad_o) return 0;
+        if (this.shift_dr_o != comp.shift_dr_o) begin
+            `uvm_info("Transaction",
+                      $sformatf("tr.shift_dr_o = %d, comp.shift_dr_o = %d",
+                                this.shift_dr_o, comp.shift_dr_o), UVM_DEBUG)
+            return 0;
+        end
+        if (this.capture_dr_o != comp.capture_dr_o) begin
+            `uvm_info("Transaction",
+                      $sformatf("tr.capture_dr_o = %d, comp.capture_dr_o = %d",
+                                this.capture_dr_o, comp.capture_dr_o),
+                      UVM_DEBUG)
+            return 0;
+        end
+        if (this.update_dr_o != comp.update_dr_o) begin
+            `uvm_info("Transaction",
+                      $sformatf("tr.update_dr_o = %d, comp.update_dr_o = %d",
+                                this.update_dr_o, comp.update_dr_o), UVM_DEBUG)
+            return 0;
+        end
+        if (this.tdo_o != comp.tdo_o) begin
+            `uvm_info("Transaction",
+                      $sformatf("tr.tdo_o = %d, comp.tdo_o = %d", this.tdo_o,
+                                comp.tdo_o), UVM_DEBUG)
+            return 0;
+        end
+        if (this.tdo_padoe_o != comp.tdo_padoe_o) begin
+            `uvm_info("Transaction",
+                      $sformatf("tr.tdo_padoe_o = %d, comp.tdo_padoe_o = %d",
+                                this.tdo_padoe_o, comp.tdo_padoe_o), UVM_DEBUG)
+            return 0;
+        end
+        if (this.tdo_pad_o != comp.tdo_pad_o) begin
+            `uvm_info("Transaction",
+                      $sformatf("tr.tdo_pad_o = %d, comp.tdo_pad_o = %d",
+                                this.tdo_o, comp.tdo_o), UVM_DEBUG)
+            return 0;
+
+        end
 
         return 1;
 
