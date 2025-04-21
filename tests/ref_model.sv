@@ -309,6 +309,11 @@ class ref_model extends uvm_component;
 
         this.comp.tdo_o = tr.tdi_pad_i;
         this.comp.tdo_pad_o = 0;
+
+        this.extest_select_o = 0;
+        this.sample_preload_select_o = 0;
+        this.mbist_select_o = 0;
+        this.debug_select_o = 0;
     endfunction
 
 endclass
