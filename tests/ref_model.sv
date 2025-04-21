@@ -34,6 +34,13 @@ class ref_model extends uvm_component;
                       this.IR_REG
                       ), UVM_LOW)
 
+            this.prev_tap_state = this.tap_state;
+            compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
+            `uvm_info(
+                "Ref Model", $sformatf(
+                "Current State = %s, IR_REG = %d", tap_state.name(), this.IR_REG
+                ), UVM_LOW)
+
             this.is_sync_reset =
                 check_for_sync_reset(tr.trst_pad_i, tr.tms_pad_i);
             if (this.is_sync_reset)
@@ -43,20 +50,17 @@ class ref_model extends uvm_component;
             reset_output_vars_in_comp();
 
             reset_update();
-            updates_to_ir_reg(tr.tdi_pad_i);
             add_assert_statements();
             check_for_bypass(tr.tdi_pad_i);
             check_for_extest();
             check_for_id_code();
+            updates_to_ir_reg(tr.tdi_pad_i);
 
             if (this.id_code_test_complete)
                 `uvm_info("Ref Model", "ID CODE Test Complete", UVM_LOW)
             ref_port.write(comp);
-            compute_current_state(tr.trst_pad_i, tr.tms_pad_i);
-            `uvm_info(
-                "Ref Model", $sformatf(
-                "Current State = %s, IR_REG = %d", tap_state.name(), this.IR_REG
-                ), UVM_LOW)
+
+
         end
     endtask
 
@@ -156,18 +160,20 @@ class ref_model extends uvm_component;
     endfunction
 
     function void updates_to_ir_reg(input bit tdi);
-        if (this.tap_state == CAPTURE_IR) begin
-            this.ir_reg = 4'b0101;  // this has to somehow lag
+        if (this.prev_tap_state == CAPTURE_IR) begin
+            this.ir_reg = 4'b0101;
+            `uvm_info("Ref Model", $sformatf("Changing ir to %b", this.ir_reg),
+                      UVM_LOW)
         end
 
-        if (this.tap_state == SHIFT_IR) begin
-            comp.tdo_pad_o = this.ir_reg[0];
+        if (this.prev_tap_state == SHIFT_IR) begin
+            this.comp.tdo_pad_o = this.ir_reg[0];
             this.ir_reg = {tdi, this.ir_reg[3:1]};
-            `uvm_info("Ref Model", $sformatf("Changing ir to %d", this.ir_reg),
-                      UVM_NONE)
+            `uvm_info("Ref Model", $sformatf("Changing ir to %b", this.ir_reg),
+                      UVM_LOW)
         end
 
-        if (this.tap_state == UPDATE_IR) begin
+        if (this.prev_tap_state == UPDATE_IR) begin
             this.IR_REG = this.ir_reg;
         end
     endfunction
