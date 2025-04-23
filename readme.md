@@ -1,4 +1,4 @@
-# JTAG verification with UVM
+# JTAG TAP Controller verification with UVM
 
 ## Run Commands
 
