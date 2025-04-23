@@ -60,7 +60,7 @@ class ref_model extends uvm_component;
             updates_to_ir_reg(tr.tdi_pad_i);
 
             if (this.id_code_test_complete)
-                `uvm_info("Ref Model", "ID CODE Test Complete", UVM_LOW)
+                `uvm_info("Ref Model", "IDCODE Test Complete", UVM_LOW)
             ref_port.write(comp);
 
 
