@@ -123,14 +123,11 @@ class ref_model extends uvm_component;
     endfunction
 
     function void check_for_bypass(input bit tdi);
-        if (this.prev_tap_state == SHIFT_DR) begin
-            if (this.IR_REG == `BYPASS) begin
-                comp.tdo_pad_o = bypass_reg;
-                `uvm_info("Ref Model", "Bypass Detected", UVM_HIGH)
-            end
-            // added this statement here so that bypass_reg lags a cycle
-            bypass_reg = tdi;
+        if (this.IR_REG == `BYPASS) begin
+            comp.tdo_pad_o = bypass_reg;
+            `uvm_info("Ref Model", "Bypass Detected", UVM_HIGH)
         end
+        if (this.prev_tap_state == SHIFT_DR) bypass_reg = tdi;
     endfunction
 
     function bit check_for_sync_reset(input bit trst, input bit tms);
