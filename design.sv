@@ -201,10 +201,10 @@ module tap_top (
 
 
     always @(posedge tck_pad_i) begin
-        tms_q1 <= #1 tms_pad_i;
-        tms_q2 <= #1 tms_q1;
-        tms_q3 <= #1 tms_q2;
-        tms_q4 <= #1 tms_q3;
+        tms_q1 <= tms_pad_i;
+        tms_q2 <= tms_q1;
+        tms_q3 <= tms_q2;
+        tms_q4 <= tms_q3;
     end
 
 
@@ -219,138 +219,138 @@ module tap_top (
 
     // test_logic_reset state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) test_logic_reset <= #1 1'b1;
-        else if (tms_reset) test_logic_reset <= #1 1'b1;
+        if (trst_pad_i) test_logic_reset <= 1'b1;
+        else if (tms_reset) test_logic_reset <= 1'b1;
         else begin
             if (tms_pad_i & (test_logic_reset | select_ir_scan))
-                test_logic_reset <= #1 1'b1;
-            else test_logic_reset <= #1 1'b0;
+                test_logic_reset <= 1'b1;
+            else test_logic_reset <= 1'b0;
         end
     end
 
     // run_test_idle state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) run_test_idle <= #1 1'b0;
-        else if (tms_reset) run_test_idle <= #1 1'b0;
+        if (trst_pad_i) run_test_idle <= 1'b0;
+        else if (tms_reset) run_test_idle <= 1'b0;
         else
   if(~tms_pad_i & (test_logic_reset | run_test_idle | update_dr | update_ir))
-            run_test_idle <= #1 1'b1;
-        else run_test_idle <= #1 1'b0;
+            run_test_idle <= 1'b1;
+        else run_test_idle <= 1'b0;
     end
 
     // select_dr_scan state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) select_dr_scan <= #1 1'b0;
-        else if (tms_reset) select_dr_scan <= #1 1'b0;
+        if (trst_pad_i) select_dr_scan <= 1'b0;
+        else if (tms_reset) select_dr_scan <= 1'b0;
         else if (tms_pad_i & (run_test_idle | update_dr | update_ir))
-            select_dr_scan <= #1 1'b1;
-        else select_dr_scan <= #1 1'b0;
+            select_dr_scan <= 1'b1;
+        else select_dr_scan <= 1'b0;
     end
 
     // capture_dr state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) capture_dr <= #1 1'b0;
-        else if (tms_reset) capture_dr <= #1 1'b0;
-        else if (~tms_pad_i & select_dr_scan) capture_dr <= #1 1'b1;
-        else capture_dr <= #1 1'b0;
+        if (trst_pad_i) capture_dr <= 1'b0;
+        else if (tms_reset) capture_dr <= 1'b0;
+        else if (~tms_pad_i & select_dr_scan) capture_dr <= 1'b1;
+        else capture_dr <= 1'b0;
     end
 
     // shift_dr state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) shift_dr <= #1 1'b0;
-        else if (tms_reset) shift_dr <= #1 1'b0;
+        if (trst_pad_i) shift_dr <= 1'b0;
+        else if (tms_reset) shift_dr <= 1'b0;
         else if (~tms_pad_i & (capture_dr | shift_dr | exit2_dr))
-            shift_dr <= #1 1'b1;
-        else shift_dr <= #1 1'b0;
+            shift_dr <= 1'b1;
+        else shift_dr <= 1'b0;
     end
 
     // exit1_dr state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) exit1_dr <= #1 1'b0;
-        else if (tms_reset) exit1_dr <= #1 1'b0;
-        else if (tms_pad_i & (capture_dr | shift_dr)) exit1_dr <= #1 1'b1;
-        else exit1_dr <= #1 1'b0;
+        if (trst_pad_i) exit1_dr <= 1'b0;
+        else if (tms_reset) exit1_dr <= 1'b0;
+        else if (tms_pad_i & (capture_dr | shift_dr)) exit1_dr <= 1'b1;
+        else exit1_dr <= 1'b0;
     end
 
     // pause_dr state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) pause_dr <= #1 1'b0;
-        else if (tms_reset) pause_dr <= #1 1'b0;
-        else if (~tms_pad_i & (exit1_dr | pause_dr)) pause_dr <= #1 1'b1;
-        else pause_dr <= #1 1'b0;
+        if (trst_pad_i) pause_dr <= 1'b0;
+        else if (tms_reset) pause_dr <= 1'b0;
+        else if (~tms_pad_i & (exit1_dr | pause_dr)) pause_dr <= 1'b1;
+        else pause_dr <= 1'b0;
     end
 
     // exit2_dr state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) exit2_dr <= #1 1'b0;
-        else if (tms_reset) exit2_dr <= #1 1'b0;
-        else if (tms_pad_i & pause_dr) exit2_dr <= #1 1'b1;
-        else exit2_dr <= #1 1'b0;
+        if (trst_pad_i) exit2_dr <= 1'b0;
+        else if (tms_reset) exit2_dr <= 1'b0;
+        else if (tms_pad_i & pause_dr) exit2_dr <= 1'b1;
+        else exit2_dr <= 1'b0;
     end
 
     // update_dr state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) update_dr <= #1 1'b0;
-        else if (tms_reset) update_dr <= #1 1'b0;
-        else if (tms_pad_i & (exit1_dr | exit2_dr)) update_dr <= #1 1'b1;
-        else update_dr <= #1 1'b0;
+        if (trst_pad_i) update_dr <= 1'b0;
+        else if (tms_reset) update_dr <= 1'b0;
+        else if (tms_pad_i & (exit1_dr | exit2_dr)) update_dr <= 1'b1;
+        else update_dr <= 1'b0;
     end
 
     // select_ir_scan state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) select_ir_scan <= #1 1'b0;
-        else if (tms_reset) select_ir_scan <= #1 1'b0;
-        else if (tms_pad_i & select_dr_scan) select_ir_scan <= #1 1'b1;
-        else select_ir_scan <= #1 1'b0;
+        if (trst_pad_i) select_ir_scan <= 1'b0;
+        else if (tms_reset) select_ir_scan <= 1'b0;
+        else if (tms_pad_i & select_dr_scan) select_ir_scan <= 1'b1;
+        else select_ir_scan <= 1'b0;
     end
 
     // capture_ir state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) capture_ir <= #1 1'b0;
-        else if (tms_reset) capture_ir <= #1 1'b0;
-        else if (~tms_pad_i & select_ir_scan) capture_ir <= #1 1'b1;
-        else capture_ir <= #1 1'b0;
+        if (trst_pad_i) capture_ir <= 1'b0;
+        else if (tms_reset) capture_ir <= 1'b0;
+        else if (~tms_pad_i & select_ir_scan) capture_ir <= 1'b1;
+        else capture_ir <= 1'b0;
     end
 
     // shift_ir state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) shift_ir <= #1 1'b0;
-        else if (tms_reset) shift_ir <= #1 1'b0;
+        if (trst_pad_i) shift_ir <= 1'b0;
+        else if (tms_reset) shift_ir <= 1'b0;
         else if (~tms_pad_i & (capture_ir | shift_ir | exit2_ir))
-            shift_ir <= #1 1'b1;
-        else shift_ir <= #1 1'b0;
+            shift_ir <= 1'b1;
+        else shift_ir <= 1'b0;
     end
 
     // exit1_ir state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) exit1_ir <= #1 1'b0;
-        else if (tms_reset) exit1_ir <= #1 1'b0;
-        else if (tms_pad_i & (capture_ir | shift_ir)) exit1_ir <= #1 1'b1;
-        else exit1_ir <= #1 1'b0;
+        if (trst_pad_i) exit1_ir <= 1'b0;
+        else if (tms_reset) exit1_ir <= 1'b0;
+        else if (tms_pad_i & (capture_ir | shift_ir)) exit1_ir <= 1'b1;
+        else exit1_ir <= 1'b0;
     end
 
     // pause_ir state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) pause_ir <= #1 1'b0;
-        else if (tms_reset) pause_ir <= #1 1'b0;
-        else if (~tms_pad_i & (exit1_ir | pause_ir)) pause_ir <= #1 1'b1;
-        else pause_ir <= #1 1'b0;
+        if (trst_pad_i) pause_ir <= 1'b0;
+        else if (tms_reset) pause_ir <= 1'b0;
+        else if (~tms_pad_i & (exit1_ir | pause_ir)) pause_ir <= 1'b1;
+        else pause_ir <= 1'b0;
     end
 
     // exit2_ir state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) exit2_ir <= #1 1'b0;
-        else if (tms_reset) exit2_ir <= #1 1'b0;
-        else if (tms_pad_i & pause_ir) exit2_ir <= #1 1'b1;
-        else exit2_ir <= #1 1'b0;
+        if (trst_pad_i) exit2_ir <= 1'b0;
+        else if (tms_reset) exit2_ir <= 1'b0;
+        else if (tms_pad_i & pause_ir) exit2_ir <= 1'b1;
+        else exit2_ir <= 1'b0;
     end
 
     // update_ir state
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) update_ir <= #1 1'b0;
-        else if (tms_reset) update_ir <= #1 1'b0;
-        else if (tms_pad_i & (exit1_ir | exit2_ir)) update_ir <= #1 1'b1;
-        else update_ir <= #1 1'b0;
+        if (trst_pad_i) update_ir <= 1'b0;
+        else if (tms_reset) update_ir <= 1'b0;
+        else if (tms_pad_i & (exit1_ir | exit2_ir)) update_ir <= 1'b1;
+        else update_ir <= 1'b0;
     end
 
     /**********************************************************************************
@@ -371,15 +371,15 @@ module tap_top (
     reg instruction_tdo;
 
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) jtag_ir[`IR_LENGTH-1:0] <= #1 `IR_LENGTH'b0;
+        if (trst_pad_i) jtag_ir[`IR_LENGTH-1:0] <= `IR_LENGTH'b0;
         else if (capture_ir)
-            jtag_ir <= #1 4'b0101;          // This value is fixed for easier fault detection
+            jtag_ir <=  4'b0101;          // This value is fixed for easier fault detection
         else if (shift_ir)
-            jtag_ir[`IR_LENGTH-1:0] <= #1{tdi_pad_i, jtag_ir[`IR_LENGTH-1:1]};
+            jtag_ir[`IR_LENGTH-1:0] <= {tdi_pad_i, jtag_ir[`IR_LENGTH-1:1]};
     end
 
     always @(negedge tck_pad_i) begin
-        instruction_tdo <= #1 jtag_ir[0];
+        instruction_tdo <= jtag_ir[0];
     end
     /**********************************************************************************
 *                                                                                 *
@@ -399,12 +399,12 @@ module tap_top (
 
     always @(posedge tck_pad_i) begin
         if (idcode_select & shift_dr)
-            idcode_reg <= #1{tdi_pad_i, idcode_reg[31:1]};
-        else idcode_reg <= #1 `IDCODE_VALUE;
+            idcode_reg <= {tdi_pad_i, idcode_reg[31:1]};
+        else idcode_reg <= `IDCODE_VALUE;
     end
 
     always @(negedge tck_pad_i) begin
-        idcode_tdo <= #1 idcode_reg;
+        idcode_tdo <= idcode_reg;
     end
     /**********************************************************************************
 *                                                                                 *
@@ -422,12 +422,12 @@ module tap_top (
     reg bypass_reg;
 
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
-        if (trst_pad_i) bypass_reg <= #1 1'b0;
-        else if (shift_dr) bypass_reg <= #1 tdi_pad_i;
+        if (trst_pad_i) bypass_reg <= 1'b0;
+        else if (shift_dr) bypass_reg <= tdi_pad_i;
     end
 
     always @(negedge tck_pad_i) begin
-        bypassed_tdo <= #1 bypass_reg;
+        bypassed_tdo <= bypass_reg;
     end
     /**********************************************************************************
 *                                                                                 *
@@ -444,10 +444,10 @@ module tap_top (
     // Updating jtag_ir (Instruction Register)
     always @(posedge tck_pad_i or posedge trst_pad_i) begin
         if (trst_pad_i)
-            latched_jtag_ir <= #1 `IDCODE;  // IDCODE selected after reset
+            latched_jtag_ir <= `IDCODE;  // IDCODE selected after reset
         else if (tms_reset)
-            latched_jtag_ir <= #1 `IDCODE;  // IDCODE selected after reset
-        else if (update_ir) latched_jtag_ir <= #1 jtag_ir;
+            latched_jtag_ir <= `IDCODE;  // IDCODE selected after reset
+        else if (update_ir) latched_jtag_ir <= jtag_ir;
     end
 
     /**********************************************************************************
@@ -505,7 +505,7 @@ begin
 
     // Tristate control for tdo_pad_o pin
     always @(negedge tck_pad_i) begin
-        tdo_padoe_o <= #1 shift_ir | shift_dr | (pause_dr & debug_select);
+        tdo_padoe_o <= shift_ir | shift_dr | (pause_dr & debug_select);
     end
     /**********************************************************************************
 *                                                                                 *
@@ -515,8 +515,8 @@ begin
 
 
     always @(negedge tck_pad_i) begin
-        shift_ir_neg <= #1 shift_ir;
-        latched_jtag_ir_neg <= #1 latched_jtag_ir;
+        shift_ir_neg <= shift_ir;
+        latched_jtag_ir_neg <= latched_jtag_ir;
     end
 
 
