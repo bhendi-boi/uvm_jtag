@@ -5,7 +5,7 @@
 ### Xcelium
 
 ```bash
-xrun -Q -unbuffered '-timescale' '1ns/1ns' '-sysv' '-access' '+rw' '+UVM_VERBOSITY=UVM_HIGH' '+UVM_TESTNAME=test_all_test' '-svseed' '2' -uvmnocdnsextra -uvmhome $UVM_HOME $UVM_HOME/src/uvm_macros.svh design.sv testbench.sv -incdir agent -incdir tests
+xrun -Q -unbuffered -gui '-timescale' '1ns/1ns' '-sysv' '-access' '+rw' '+UVM_VERBOSITY=UVM_FULL' '+UVM_TESTNAME=test_all_test' '-svseed' '2' -uvmnocdnsextra -uvmhome $UVM_HOME $UVM_HOME/src/uvm_macros.svh design.sv testbench.sv -incdir agent -incdir tests -input input.tcl
 
 ```
 
@@ -38,7 +38,7 @@ Instruction register length = 4
 
 ## Progress
 
-### Testing Reset
+### Testing Reset ✅
 
 - `reset_test` is used to test the reset mechanism of JTAG.
 - `sync_reset_seq` generated five consecutive cycles with `TMS` = 1.
@@ -61,7 +61,7 @@ Instruction register length = 4
 - Then it brings TAP to IDLE State.
 - `bs_chain_tdi` is connected to `tdo_pad_o`.
 
-### BYPASS
+### BYPASS ✅
 
 - Run `bypass_test` to test the bypass functionality of JTAG.
 - `bypass_seq` load `1111` into the instruction register.
