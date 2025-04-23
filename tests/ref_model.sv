@@ -113,8 +113,16 @@ class ref_model extends uvm_component;
             `uvm_info("Ref Model", "IDCODE Detected", UVM_HIGH)
             this.comp.tdo_pad_o = 1'b1;
         end
+        // TODO! Temporary fix. Need to read about this
+        if (IR_REG == `IDCODE && this.prev_tap_state == EXIT_1_DR) begin
+            this.comp.tdo_pad_o = 0;
+            return;
+        end
         if (this.prev_tap_state == SHIFT_DR) begin
             if (IR_REG == `IDCODE) begin
+                `uvm_info("Ref Model", $sformatf("id_code_reg_index = %d",
+                                                 this.id_code_reg_index),
+                          UVM_FULL)
                 this.comp.tdo_pad_o = this.id_code_value[this.id_code_reg_index];
                 this.id_code_test_complete = this.id_code_reg_index == 31 ? 1 : 0;
                 this.id_code_reg_index = (this.id_code_reg_index + 1) % 32;
