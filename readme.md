@@ -1,5 +1,11 @@
 # JTAG TAP Controller verification with UVM
 
+## Resources
+
+- DUT is taken from opencores website.
+- Can also be found on [this github page](https://github.com/fabriziotappero/ip-cores/tree/other_jtag_test_access_port_tap/tap/rtl/verilog).
+- Only change made to the dut is removing `#1` delays in assigning values.
+
 ## Run Commands
 
 ### Xcelium
