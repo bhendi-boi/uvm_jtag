@@ -46,7 +46,7 @@ Instruction register length = 4
 - `tms_reset` is asserted after five consecutive cycles with `TMS` = 1.
 - `test_logic_reset` is the final signal which resets the DUT.
 
-### IDCODE
+### IDCODE ✅
 
 - `IDCODE` instruction register is `0100`.
 - `id_code_seq` generates five consecutive cycles with `TMS` = 1.
@@ -54,7 +54,7 @@ Instruction register length = 4
 - Update IR to `IDCODE`.
 - Move TAP to SHIFT_DR and stay in the same state for 32 transactions while sampling `tdo_pad_o`.
 
-### EXTEST
+### EXTEST ✅
 
 - Run `extest_test` to test the extest functionality of JTAG.
 - `extest_seq` loads `0000` into the instruction register.
@@ -68,7 +68,7 @@ Instruction register length = 4
 - Then it brings TAP to SHIFT_DR state.
 - `tdo_pad_o` lags `tdi_pad` by one cycle.
 
-### Debug
+### Debug ✅
 
 - Run `debug_test` to test the debug functionality of JTAG.
 - `debug_seq` load `1000` into the instruction register.
