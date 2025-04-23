@@ -5,7 +5,7 @@
 ### Xcelium
 
 ```bash
-xrun -Q -unbuffered -gui '-timescale' '1ns/1ns' '-sysv' '-access' '+rw' '+UVM_VERBOSITY=UVM_FULL' '+UVM_TESTNAME=test_all_test' '-svseed' '2' -uvmnocdnsextra -uvmhome $UVM_HOME $UVM_HOME/src/uvm_macros.svh design.sv testbench.sv -incdir agent -incdir tests -input input.tcl
+xrun -Q -unbuffered -gui '-timescale' '1ns/1ns' '-sysv' '-access' '+rw' '+UVM_VERBOSITY=UVM_FULL' '+UVM_TESTNAME=test_all_test' '-svseed' '2' -uvmautocompile -uvmnocdnsextra -uvmhome $UVM_HOME $UVM_HOME/src/uvm_macros.svh design.sv testbench.sv -incdir agent -incdir tests -input input.tcl -simvisionargs '-layout uvmdebug'
 
 ```
 
